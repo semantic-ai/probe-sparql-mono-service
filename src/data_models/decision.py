@@ -244,9 +244,8 @@ class Decision(Base):
     @wrap(entering, exiting)
     def annotations(self, value: list[Annotation] | Annotation) -> None:
 
-        self.logger.info(f"kapoet input {value}")
+        self.logger.debug(f"kannotation value: {value}")
         if not value:
-            self.logger.info(f"boengbong")
             self.logger.debug("No annotations provided")
             self._annotations = []
         elif isinstance(value, list) and isinstance(value[0], Annotation):
