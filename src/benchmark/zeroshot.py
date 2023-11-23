@@ -48,10 +48,7 @@ class ZeroshotBenchmark(BenchmarkWrapper):
             checkpoint_dir=checkpoint_dir
         )
 
-        self._default_mlflow_tags = {
-            "model_type": self.config.run.model.type,
-            "supervised_model_id": model_ids
-        }
+        self._default_mlflow_tags = {"model_type": "Zeroshot"}
         self._default_description = "Running evaluation over all specified zeroshot models"
 
     @property
