@@ -1,0 +1,4 @@
+Approach,Training Data,Advantages,Disadvantages
+Supervised Classification,Labeled data for all classes,High accuracy,Requires a lot of labeled data
+Zero-Shot Classification,No labeled data for new classes,Can classify new classes without any labeled data,Lower accuracy than supervised classification
+Embedding Similarity,Labeled data for some classes,Can classify new classes without any labeled data for those classes,Lower accuracy than supervised classification

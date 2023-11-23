@@ -1,0 +1,20 @@
+flavour: huggingface_model
+model_id: mlflow:/bert__business_capabilities__parent_node
+stage: Production
+sub_nodes:
+- flavour: huggingface_model
+  model_id: mlflow:/bert__business_capabilities__ondersteunende_capabilities
+  stage: Production
+  sub_nodes: []
+  uri: http://stad.gent/id/concepts/business_capabilities/concept_90
+- flavour: huggingface_model
+  model_id: mlflow:/bert__business_capabilities__sturende_capabilities
+  stage: Production
+  sub_nodes: []
+  uri: http://stad.gent/id/concepts/business_capabilities/concept_1
+- flavour: huggingface_model
+  model_id: mlflow:/bert__business_capabilities__uitvoerende_capabilities
+  stage: Production
+  sub_nodes: []
+  uri: http://stad.gent/id/concepts/business_capabilities/concept_13
+uri: http://stad.gent/id/concepts/business_capabilities
