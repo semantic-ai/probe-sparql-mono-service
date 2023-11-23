@@ -13,7 +13,7 @@ class LoggingBase:
         self.logger = logging.getLogger(logger_prefix)
 
         h1 = logging.StreamHandler()
-        h1.setFormatter(logging.Formatter("[%(code)s] %(message)s"))
+        h1.setFormatter(logging.Formatter("[%(code)s] %(message)s (%(filename)s:%(lineno)d)"))
         self.logger.addHandler(h1)
         self.logger.setLevel(config.level)
         self.logger.propagate = False
