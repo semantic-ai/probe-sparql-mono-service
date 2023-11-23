@@ -25,3 +25,5 @@ jobs:
           tags: |
             stadgent/probe-sparql-mono:latest
             stadgent/probe-sparql-mono:${{ github.sha }}
+          cache-from: type=registry,ref=stadgent/probe-sparql-mono:latest
+          cache-to: type=inline
