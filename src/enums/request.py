@@ -30,3 +30,9 @@ class EndpointType(str, enum.Enum):
                 return config.request.endpoint_decision
             case EndpointType.TAXONOMY:
                 return config.request.endpoint_taxonomy
+
+
+class AuthType(enum.Enum):
+    NONE = "none"
+    BASIC = "basic"
+    DIGEST = "digest"
