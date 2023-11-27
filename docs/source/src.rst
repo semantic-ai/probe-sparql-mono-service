@@ -24,10 +24,11 @@ Modules
 
 Entrypoints
 ***********
+In this section you can find all entrypoints scripts with their technical documentation.
+These entrypoints are directly called from the airflow DAGs
 
-
-Overview statistics
--------------------
+Generate dataset statistics
+---------------------------
 
 .. automodule:: src.dataset_statistics
    :members:
@@ -35,7 +36,7 @@ Overview statistics
    :show-inheritance:
 
 Export dataset
--------------------
+---------------
 
 .. automodule:: src.dataset_export
    :members:
@@ -51,11 +52,36 @@ Benchmarking
    :show-inheritance:
 
 
-Training models
----------------
+Train supervised model with specific taxonomy node
+--------------------------------------------------
+
+.. automodule:: src.train_supervised_specific
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Create blank configs
+---------------------
+
+.. automodule:: src.create_blank_config
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Train supervised model for entire taxonomy tree
+-----------------------------------------------
+
+.. automodule:: src.train_supervised_tree
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Execute inference based on a provided model tree configuration
+--------------------------------------------------------------
 
 .. automodule:: src.train_supervised
    :members:
    :undoc-members:
    :show-inheritance:
-
