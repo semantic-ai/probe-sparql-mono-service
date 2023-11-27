@@ -8,10 +8,11 @@ if TYPE_CHECKING:
     from logging import Logger
 
 import requests
+from requests.auth import HTTPBasicAuth, HTTPDigestAuth
 import pandas as pd
 
 from ..errors import StatuscodeError
-from ..enums import EndpointType
+from ..enums import EndpointType, AuthType
 
 import time
 
@@ -37,6 +38,20 @@ class RequestHandler:
         if endpoint is None:
             endpoint = EndpointType.DECISION
 
+        match self.config.request.auth_type:
+            case AuthType.NONE:
+                self.auth = None
+            case AuthType.BASIC:
+                self.auth = HTTPBasicAuth(
+                    username=self.config.request.username,
+                    password=self.config.request.password,
+                )
+            case AuthType.DIGEST:
+                self.auth = HTTPDigestAuth(
+                    username=self.config.request.username,
+                    password=self.config.request.password,
+                )
+
         retries = 0
         succes = False
 
@@ -45,7 +60,7 @@ class RequestHandler:
                 EndpointType.match(config=self.config, value=endpoint),
                 data={"query": query},
                 headers=self.config.request.header,
-                auth=(self.config.request.username, self.config.request.password)
+                auth=self.auth,
             )
 
             if succes := r.ok:

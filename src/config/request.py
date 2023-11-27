@@ -1,9 +1,11 @@
 from .base import Settings
+from ..enums import AuthType
 
 
 class RequestConfig(Settings):
     endpoint_decision: str = ""
     endpoint_taxonomy: str = ""
+    auth_type: AuthType = AuthType.NONE
     username: str = ""
     password: str = ""
     max_retries: int = 3
