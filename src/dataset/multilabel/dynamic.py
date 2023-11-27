@@ -222,7 +222,7 @@ class DynamicMultilabelTrainingDataset(TrainDataset):
         :return: a dictionary containing the train/inference samples (adaptable with a config)
         """
 
-        labels = self._get_label(idx)
+        labels = self._get_label(idx) if self.config.run.dataset.get_label else []
         self.logger.debug(f"label: len({len(labels)}) {labels}")
         text = self._get_text(idx)
         decision_uri = self.dataset[idx].get("uri")

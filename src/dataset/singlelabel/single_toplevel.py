@@ -43,7 +43,7 @@ class SingleTopLevel(TrainingDataset):
             device=device
         )
 
-    def __get_label(self, idx: int) -> str:
+    def _get_label(self, idx: int) -> str:
         """
         This function implements the abstract logic for building the labels, it can be overwritten and adapted without
         problems (as long as the default input output signature is kept).
@@ -53,7 +53,7 @@ class SingleTopLevel(TrainingDataset):
         """
         return self.dataset[idx].get("labels")
 
-    def __get_text(self, idx: int) -> str:
+    def _get_text(self, idx: int) -> str:
         """
         This function implements the abstract logic in order to retrieve the text from the provided dataset.
         It is possible to overwrite this function and define custom behaviour to create the text input for the model.
@@ -80,7 +80,7 @@ class SingleTopLevel(TrainingDataset):
         """
 
     def __getitem__(self, idx) -> dict[str, str]:
-        label = self.__get_label(idx)
-        text = self.__get_text(idx)
+        label = self._get_label(idx) if self.config.run.dataset.get_label else []
+        text = self._get_text(idx)
 
         return dict(uri=self.dataset[idx].get("uri"), text=text, label=label)

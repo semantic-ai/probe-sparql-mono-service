@@ -1,4 +1,3 @@
-
 from .constant import CONFIG_PREFIX
 from ..base import Settings
 from ...enums import DatasetType
@@ -10,6 +9,7 @@ class DatasetConfig(Settings):
     train_test_split: float = 0.2
     tokenize: bool = False
     apply_mlb: bool = True
+    get_label: bool = True
 
     predefined_uris: list[str] = [
         'https://data.gent.be/id/besluiten/20.1119.1763.4055',

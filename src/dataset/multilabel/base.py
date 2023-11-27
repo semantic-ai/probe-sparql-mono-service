@@ -75,8 +75,18 @@ class MultilabelTrainingDataset(TrainDataset):
 
         labels = []
 
+        self.logger.info(f"len {len(self.dataset)}")
         selected_record = self.dataset[idx]
-        for label in selected_record.get("labels", []):
+        self.logger.info(f"selected_record: {selected_record}")
+
+        input_labels = selected_record.get("labels", None)
+
+        if input_labels is None:
+            input_labels = []
+
+        self.logger.info(f"input labels: {input_labels}")
+
+        for label in input_labels:
             label_in_tree = self.taxonomy.find(label)
 
             self.logger.debug(f"Label ({label}) found in tree {label_in_tree}")
@@ -121,7 +131,7 @@ class MultilabelTrainingDataset(TrainDataset):
         :return: a dictionary containing the train/inference samples (adaptable with a config)
         """
 
-        labels = self._get_label(idx)
+        labels = self._get_label(idx) if self.config.run.dataset.get_label else []
         text = self._get_text(idx)
         decision_uri = self.dataset[idx].get("uri")
 

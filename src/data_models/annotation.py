@@ -257,8 +257,6 @@ class Annotation(Base):
         if value is None:
             self._labels = []
         elif isinstance(value, list):
-            self.logger.debug(f"len: {len(value)}")
-            self.logger.debug(f"type: {type(value[0])}")
             self._labels = value
         else:
             raise CustomValueError(

@@ -152,7 +152,8 @@ def get_model(
                 config=config,
                 logger=logger,
                 model_id=model_id,
-                taxonomy=taxonomy
+                taxonomy=taxonomy,
+                stage=kwargs.get("model_stage", "Production")
             )
 
         ###

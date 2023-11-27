@@ -21,7 +21,8 @@ class HuggingfaceModel(Model):
             config: Config,
             logger: Logger,
             model_id: str,
-            taxonomy: Taxonomy
+            taxonomy: Taxonomy,
+            stage: str = "Production"
     ) -> None:
 
         super().__init__(
@@ -30,21 +31,28 @@ class HuggingfaceModel(Model):
             model_id=model_id
         )
         self._prep_labels(taxonomy)
-        self._load_model(model_id)
+        self._load_model(
+            model_id=model_id,
+            stage=stage
+        )
 
-    def _load_model(self, model_id: str) -> None:
+    def _load_model(
+            self,
+            model_id: str,
+            stage: str
+    ) -> None:
 
         self.logger.debug(f"model id {model_id}")
 
         if "mlflow" in self.model_id:
             self.logger.debug("SELECTING MLFLOW MODEL")
             components = mlflow.transformers.load_model(
-                f"models:/{model_id.split(':/')[-1]}/Production",
+                f"models:/{model_id.split(':/')[-1]}/{stage}",
                 return_type="components"
             )
 
             tokenizer = components.get("tokenizer")
-            tokenizer.model_max_len=512
+            tokenizer.model_max_len = 512  # hardcode max length of input to prevent further issues
 
             self.model = pipeline(
                 "text-classification",
@@ -59,7 +67,7 @@ class HuggingfaceModel(Model):
                 task="text-classification",
             )
 
-    def classify(self, text: str, multi_label: bool = True,  **kwargs) -> dict[str, float]:
+    def classify(self, text: str, multi_label: bool = True, **kwargs) -> dict[str, float]:
 
         self.logger.debug(f"pipeline: {type(self.model)} {self.model}")
         pipeline_output = self.model(

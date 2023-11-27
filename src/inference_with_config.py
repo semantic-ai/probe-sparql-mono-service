@@ -3,8 +3,7 @@ from .config import Config
 from .sparql import RequestHandler
 from .utils import LoggingBase
 from .helpers import Inference, InferenceModelTree
-from .training import get_training_module
-from .enums import DecisionQuery, DatasetType, TrainingFlavours
+from .enums import DecisionQuery, DatasetType
 
 import mlflow
 from fire import Fire
@@ -17,6 +16,19 @@ def main(
         dataset_type: DatasetType,
         checkpoint_folder: str = None
 ):
+    """
+    This script implements the prediction based on config.
+
+    The goal of the prediction based on config script is to rebuild a tree based on the provided models,
+    these models take in a text and execute the predictions for the classes they are trained on.
+    This process is done by computing the parent node, all sub nodes that are above a certain threshold are then also computed.
+    This goes on recursively until it has reached the maximum node_depth for the provided config.
+
+    :param taxonomy_uri: the taxonomy to use for the prediction
+    :param model_config: the json config to use to create the prediciton trees with
+    :param dataset_type: the type of dataset to use for the model training
+    :param checkpoint_folder: path to a local checkpoint, this can easily be used when debugging locally.
+    """
     # defining global vars
     config = Config()
     logger = LoggingBase(
@@ -66,10 +78,6 @@ def main(
 
 
 if __name__ == "__main__":
-    d = {"uri":"http://stad.gent/id/concepts/business_capabilities","model_id": "mlflow:/bert__business_capabilities__parent_node","flavour":"huggingface_model","stage":"Production","sub_nodes":[{"uri": "http://stad.gent/id/concepts/business_capabilities/concept_90","model_id":"mlflow:/bert__business_capabilities__ondersteunende_capabilities","flavour":"huggingface_model","stage":"Production","sub_nodes":[]},{"uri":"http://stad.gent/id/concepts/business_capabilities/concept_1","model_id":"mlflow:/bert__business_capabilities__sturende_capabilities","flavour":"huggingface_model","stage":"Production","sub_nodes":[]},{"uri":"http://stad.gent/id/concepts/business_capabilities/concept_13","model_id":"mlflow:/bert__business_capabilities__uitvoerende_capabilities","flavour":"huggingface_model","stage":"Production","sub_nodes":[]}]}
-    with open("test.txt", "w+") as f:
-        json.dump(d, f)
-
     Fire(main)
 
 
