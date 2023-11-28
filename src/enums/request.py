@@ -26,13 +26,13 @@ class EndpointType(str, enum.Enum):
         :return: the chosen endpoint url
         """
         match value:
-            case EndpointType.DECISION:
+            case EndpointType.DECISION | EndpointType.DECISION.value:
                 return config.request.endpoint_decision
-            case EndpointType.TAXONOMY:
+            case EndpointType.TAXONOMY | EndpointType.TAXONOMY.value:
                 return config.request.endpoint_taxonomy
 
 
-class AuthType(enum.Enum):
+class AuthType(str, enum.Enum):
     NONE = "none"
     BASIC = "basic"
     DIGEST = "digest"

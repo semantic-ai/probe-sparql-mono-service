@@ -5,7 +5,7 @@ from ..enums import AuthType
 class RequestConfig(Settings):
     endpoint_decision: str = ""
     endpoint_taxonomy: str = ""
-    auth_type: AuthType = AuthType.NONE
+    auth_type: AuthType = "none"
     username: str = ""
     password: str = ""
     max_retries: int = 3
