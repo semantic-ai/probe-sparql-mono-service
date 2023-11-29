@@ -9,6 +9,7 @@ if TYPE_CHECKING:
 
 import requests
 from requests.auth import HTTPBasicAuth, HTTPDigestAuth
+import traceback
 import pandas as pd
 
 from ..errors import StatuscodeError
@@ -52,27 +53,37 @@ class RequestHandler:
                     password=self.config.request.password,
                 )
 
-        retries = 0
+        self.logger.info(f"auth type: {self.config.request.auth_type}")
+
+        retries = 1
         succes = False
 
         while not succes:
-            r = requests.post(
-                EndpointType.match(config=self.config, value=endpoint),
-                data={"query": query},
-                headers=self.config.request.header,
-                auth=self.auth,
-            )
+            try:
+                r = requests.post(
+                    EndpointType.match(config=self.config, value=endpoint),
+                    timeout=10,
+                    data={"query": query},
+                    headers=self.config.request.header,
+                    auth=self.auth,
+                )
 
-            if succes := r.ok:
-                self.logger.debug("Status OK")
-                return r.json()
-            else:
-                self.logger.debug(f"Status NOK - retry: {retries}, max_retry: {self.config.request.max_retries}")
-                retries += 1
-                if retries == self.config.request.max_retries:
-                    raise StatuscodeError(r.status_code)
+                if succes := r.ok:
+                    self.logger.debug("Status OK")
+                    return r.json()
 
-                time.sleep(retries * 10)
+                else:
+                    if retries == self.config.request.max_retries:
+                        self.logger.warning(
+                            f"Status NOK - retry: {retries}, max_retry: {self.config.request.max_retries}")
+                        raise StatuscodeError(r.status_code)
+
+                    retries += 1
+                    time.sleep(retries * 10)
+
+            except Exception:
+                self.logger.warning(f"During execution of the request, the following error occured: {traceback.format_exc()}")
+
 
     def post2json(self, query: str, endpoint: EndpointType = None):
         """
