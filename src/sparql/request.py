@@ -72,18 +72,18 @@ class RequestHandler:
                     self.logger.debug("Status OK")
                     return r.json()
 
-                else:
-                    if retries == self.config.request.max_retries:
-                        self.logger.warning(
-                            f"Status NOK - retry: {retries}, max_retry: {self.config.request.max_retries}")
-                        raise StatuscodeError(r.status_code)
-
-                    retries += 1
-                    time.sleep(retries * 10)
-
             except Exception:
+                retries += 1
                 self.logger.warning(f"During execution of the request, the following error occured: {traceback.format_exc()}")
 
+            finally:
+                if retries == self.config.request.max_retries:
+                    self.logger.warning(
+                        f"Status NOK - retry: {retries}, max_retry: {self.config.request.max_retries}")
+                    raise Exception("Max retries exceeded")
+
+                retries += 1
+                time.sleep(retries * 10)
 
     def post2json(self, query: str, endpoint: EndpointType = None):
         """
