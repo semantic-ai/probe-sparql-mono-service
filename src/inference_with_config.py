@@ -12,7 +12,7 @@ import json
 
 def main(
         taxonomy_uri: str,
-        model_config: str,
+        model_config: dict,
         dataset_type: DatasetType,
         checkpoint_folder: str = None
 ):
