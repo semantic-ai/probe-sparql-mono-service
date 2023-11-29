@@ -76,7 +76,7 @@ class Annotation(Base):
         self._date = None
         self._user = None
 
-        self.uri = self._ensure_encapsulation(uri or self.generate_uri(self.config.annotation.uri_base))
+        self.uri = uri or self.generate_uri(self.config.annotation.uri_base)
 
         self.labels = labels
         self.taxonomy = taxonomy
@@ -214,7 +214,7 @@ class Annotation(Base):
             """
 
         subquery = self.config.annotation.sub_query.format(
-            uri=self.uri,
+            uri=self._ensure_encapsulation(self.uri),
             taxonomy=self._ensure_encapsulation(self.taxonomy.uri),
             timestamp=self.date,
             label_uris=", ".join([l.uri for l in self.labels]),

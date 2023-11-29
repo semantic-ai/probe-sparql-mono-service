@@ -1,4 +1,4 @@
-from src.config.base import Settings
+from ..base import Settings
 
 
 class SparqlConfig(Settings):

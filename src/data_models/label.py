@@ -48,8 +48,8 @@ class Label(Base):
         self._score = None
         self._uri = None
 
-        self.uri = self._ensure_encapsulation(uri or self.generate_uri(self.config.label.uri_base))
-        self.taxonomy_node_uri = self._ensure_encapsulation(taxonomy_node_uri)
+        self.uri = uri or self.generate_uri(self.config.label.uri_base)
+        self.taxonomy_node_uri = taxonomy_node_uri
         self.score = score
 
 
@@ -163,8 +163,8 @@ class Label(Base):
         """
 
         query = self.config.label.sub_query.format(
-            uri=self.uri,
-            taxonomy_node_uri=self.taxonomy_node_uri,
+            uri=self._ensure_encapsulation(self.uri),
+            taxonomy_node_uri=self._ensure_encapsulation(self.taxonomy_node_uri),
             score=self.score
         )
 

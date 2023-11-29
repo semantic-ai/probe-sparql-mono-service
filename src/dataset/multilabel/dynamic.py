@@ -4,11 +4,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from src.config import Config
+    from ...config import Config
     from logging import Logger
     from typing import Any
 
-from src.data_models import Taxonomy
+from ...data_models import Taxonomy
 from transformers import AutoTokenizer
 import torch
 from torch import device

@@ -4,16 +4,16 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from src.config import Config
-    from src.models import get_model, Model
-    from src.sparql import RequestHandler
-    from src.dataset import DatasetBuilder
+    from ..config import Config
+    from ..models import get_model, Model
+    from ..sparql import RequestHandler
+    from ..dataset import DatasetBuilder
     from logging import Logger
 
-from src.data_models import TaxonomyTypes, Decision, Label, Annotation, Taxonomy, Model as data_model
-from src.models import get_model
-from src.dataset import create_dataset
-from src.enums import EndpointType, TaxonomyFindTypes
+from ..data_models import TaxonomyTypes, Decision, Label, Annotation, Taxonomy, Model as data_model
+from ..models import get_model
+from ..dataset import create_dataset
+from ..enums import EndpointType, TaxonomyFindTypes
 
 from datetime import datetime
 from uuid import uuid4

@@ -1,5 +1,4 @@
-from src.data_models import TaxonomyTypes
-from .dataset import DatasetBuilder
+from .data_models import TaxonomyTypes
 from .sparql import RequestHandler
 from .config import Config
 from .utils import LoggingBase

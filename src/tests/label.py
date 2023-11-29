@@ -31,14 +31,16 @@ class LabelTests(unittest.TestCase):
         self.assertTrue(self.user_label.score == 1)
 
     def test_label_subquery(self):
-        expected_query = "<https://lblod.data.gift/concepts/ml2grow/label/test> ext:isTaxonomy id1 . " \
+        expected_query = "<https://lblod.data.gift/concepts/ml2grow/label/test> ext:isTaxonomy <id1> . " \
                          "<https://lblod.data.gift/concepts/ml2grow/label/test> ext:hasScore 1.0."
+
+        self.logger.info(f"expected: {expected_query}")
 
         formatted_query = " ".join(
             [q.lstrip().rstrip() for q in self.user_label.subquery.split("\n") if not q.lstrip().rstrip() == ""])
+        self.logger.info(f"formatted: {formatted_query}")
 
         self.assertEqual(formatted_query, expected_query)
 
-    def test_from_sparql(self):
-        # todo: add the sparql test
-        raise NotImplementedError()
+    # def test_from_sparql(self):
+    #     raise NotImplementedError()

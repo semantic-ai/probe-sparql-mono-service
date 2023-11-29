@@ -33,6 +33,9 @@ class EndpointType(str, enum.Enum):
 
 
 class AuthType(str, enum.Enum):
+    """
+    This enum specifies what authentication type to use on the sparql endpoint
+    """
     NONE = "none"
     BASIC = "basic"
     DIGEST = "digest"

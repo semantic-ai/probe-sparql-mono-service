@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from src.config import Config
+    from ...config import Config
     from logging import Logger
 
 from ..base import Model

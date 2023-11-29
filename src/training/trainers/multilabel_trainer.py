@@ -1,6 +1,6 @@
 from transformers import Trainer
 
-from src.training.losses import AsymmetricLossOptimized
+from ..losses import AsymmetricLossOptimized
 
 
 class MultilabelTrainer(Trainer):
