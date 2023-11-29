@@ -169,7 +169,7 @@ class BertTraining(Training, ABC):
         self.logger.info(f"label distribution test: {eval_dataset.label_distribution}")
 
     def train(self):
-        with mlflow.start_run(nested=self.nested_mlflow_run, run_name=f"BERT_{self.ta}"):
+        with mlflow.start_run(nested=self.nested_mlflow_run, run_name=f"BERT_{uuid4().hex}"):
             training_args = TrainingArguments(
                 output_dir='./results',
                 num_train_epochs=self.config.run.training.arguments.num_train_epochs,
