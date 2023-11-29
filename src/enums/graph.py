@@ -16,6 +16,7 @@ class GraphType(str, enum.Enum):
 
     USER_ANNOTATION = "user_annotation"
     MODEL_ANNOTATION = "model_annotation"
+    MODEL_INFORMATION = "model_information"
     TESTING = "testing_annotation"
 
     @staticmethod
@@ -33,3 +34,5 @@ class GraphType(str, enum.Enum):
                 return config.sparql.probe_model_annotations_graph
             case GraphType.TESTING:
                 return config.sparql.testing_graph
+            case GraphType.MODEL_INFORMATION:
+                return config.sparql.model_information

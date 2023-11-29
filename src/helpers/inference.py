@@ -391,7 +391,8 @@ class Inference:
             request_handler: RequestHandler,
             dataset_builder: DatasetBuilder,
             inference_model_tree: InferenceModelTree,
-            dataset_type: str
+            dataset_type: str,
+            model_reference: Model
     ):
         self.config = config
         self.config.run.dataset.type = dataset_type
@@ -400,6 +401,7 @@ class Inference:
         self.request_handler = request_handler
         self.dataset_builder = dataset_builder
         self.inference_model = inference_model_tree
+        self.model_reference = model_reference
 
         self.label2id = {k.lower(): v for k, v in self.dataset_builder.taxonomy.label2uri.items()}
 
@@ -513,15 +515,7 @@ class Inference:
                     uri=self.dataset_builder.taxonomy.uri
                 ),
                 labels=labels,
-                model=data_model(
-                    config=self.config.data_models,
-                    logger=self.logger,
-                    uri=self.config.data_models.model.uri_base + "custom_configuration/" + str(uuid4().hex),
-                    category="custom compound model",
-                    registered_model=f"Config: self.inference_model.model_config",
-                    register=False
-
-                )
+                model=self.model_reference
             )
         )
         insert_query = decision_obj.insert_query

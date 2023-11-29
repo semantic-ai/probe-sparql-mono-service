@@ -2,6 +2,7 @@ from .dataset import DatasetBuilder
 from .config import Config
 from .sparql import RequestHandler
 from .utils import LoggingBase
+from .data_models import Model
 from .helpers import Inference, InferenceModelTree
 from .enums import DecisionQuery, DatasetType
 
@@ -39,6 +40,17 @@ def main(
         logger=logger
     )
 
+    model = Model(
+        config=config.data_models,
+        logger=logger,
+        name="config_based_inference_model",
+        category="tree_config",
+        mlflow_reference=str(model_config)
+    )
+    query = model.write_to_sparql(request_handler)
+
+
+
     if checkpoint_folder is None:
         dataset_builder = DatasetBuilder.from_sparql(
             config=config,
@@ -72,6 +84,7 @@ def main(
         dataset_builder=dataset_builder,
         inference_model_tree=model_tree,
         dataset_type=dataset_type,
+        model_reference=model
     )
 
     inference.execute()

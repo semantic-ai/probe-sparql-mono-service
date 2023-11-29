@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 
 from ..utils import wrap, entering, exiting
 from ..errors import CustomValueError
+from ..enums import GraphType, EndpointType
 
 from .base import Base
 
@@ -35,6 +36,7 @@ class Model(Base):
             register=True
         )
     """
+
     def __init__(
             self, config: DataModelConfig,
             logger: Logger,
@@ -58,6 +60,7 @@ class Model(Base):
         self._mlflow_reference = None
         self._registered_model = None
         self._register = None
+        self._uri = None
 
         # uri
         self.uri = uri or self.generate_uri(self.config.model.uri_base)
@@ -100,7 +103,6 @@ class Model(Base):
                     expected_type=str,
                     received_type=type(value)
                 )
-
 
     @property
     def category(self) -> str:
@@ -308,3 +310,34 @@ class Model(Base):
         else:
             self.logger.critical(f"Unsuported timestamp caught ({type(value)})")
             raise Exception(f"{type(value)} is not supported")
+
+    def write_to_sparql(self, request_handler: RequestHandler):
+        subquery = self.config.model.sub_query.format(
+            uri=self._ensure_encapsulation(self.uri),
+            date=self.date,
+            name=self.name,
+            category=self.category,
+            mlflow_reference=self.mlflow_reference,
+            registered_model=self.registered_model
+        )
+
+        graph_uri = GraphType.match(
+            config=self.config,
+            value=GraphType.MODEL_INFORMATION
+        )
+
+        query = f"""\
+        PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+        
+        INSERT DATA {{
+            GRAPH {graph_uri} {{
+                {subquery}
+            }}
+        }}
+        """
+        request_handler.post2json(
+            query=query,
+            endpoint=EndpointType.DECISION
+        )
+
+
