@@ -183,6 +183,7 @@ class DatasetBuilder:
             ) for k, v in _memory.items()
         ]
 
+        logger.info(f"Creating dataset from sparql")
         for response in tqdm(annotated_decisions, desc="pulling data from endpoint"):
             decision = Decision.from_sparql(
                 config=config.data_models,

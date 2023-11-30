@@ -40,6 +40,7 @@ def main(
         logger=logger
     )
 
+    logger.info(f"register custom config")
     model = Model(
         config=config.data_models,
         logger=logger,
@@ -49,7 +50,7 @@ def main(
     )
     query = model.write_to_sparql(request_handler)
 
-
+    logger.info(f"start creating dataset")
 
     if checkpoint_folder is None:
         dataset_builder = DatasetBuilder.from_sparql(
@@ -69,6 +70,7 @@ def main(
             logger=logger,
             checkpoint_folder=checkpoint_folder
         )
+    logger.info(f"Succesfully created dataset")
 
     model_tree = InferenceModelTree.from_model_config(
         config=config,
@@ -92,8 +94,3 @@ def main(
 
 if __name__ == "__main__":
     Fire(main)
-
-
-
-
-
