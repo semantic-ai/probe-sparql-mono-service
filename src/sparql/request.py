@@ -66,8 +66,7 @@ class RequestHandler:
 
             # verify that it is not greater or eqaul to max retries
             if retries >= self.config.request.max_retries:
-                self.logger.warning(
-                    f"Status NOK - retry: {retries}, max_retry: {self.config.request.max_retries}")
+                self.logger.error(f"Status NOK - retry: {retries}, max_retry: {self.config.request.max_retries}")
                 raise Exception(f"Max retries exceeded for sparql request with exception: {last_ex}")
 
             try:
@@ -79,18 +78,16 @@ class RequestHandler:
                     auth=self.auth,
                 )
 
+                self.logger.info(f"response: {r.text}")
                 if succes := r.ok:
-                    self.logger.debug("Status OK")
                     return r.json()
 
             except requests.exceptions.Timeout as ex:
-                retries += 1
-                self.logger.error(f"Request execution timed out")
-                last_ex = ex
+                self.logger.info(f"Request execution timed out: {ex}")
+                last_ex = "TIMEOUT"
 
             except Exception as ex:
-                retries += 1
-                self.logger.error(f"During execution of the request, the following error occured: {traceback.format_exc()}")
+                self.logger.info(f"During execution of the request, the following error occured: {traceback.format_exc()}")
                 last_ex = ex
 
             finally:
