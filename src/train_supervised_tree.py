@@ -1,4 +1,10 @@
-import fire
+from __future__ import annotations
+
+# typing imports
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .data_models import Taxonomy
 
 from .dataset import DatasetBuilder
 from .config import Config
@@ -8,6 +14,7 @@ from .training import get_training_module
 from .enums import DecisionQuery, DatasetType, TrainingFlavours
 
 import mlflow
+import fire
 import copy
 
 
@@ -96,35 +103,35 @@ def main(
             checkpoint_folder=checkpoint_folder
         )
 
-    with mlflow.start_run():
+    def train(taxonomy_node: Taxonomy) -> None:
+        """
+        Function to execute recursive training
 
-        logger.info("Training parent model")
-        training_module = get_training_module(
-            config=config,
-            logger=logger,
-            base_model_id=model_id,
-            dataset_builder=copy.deepcopy(dataset_builder),
-            sub_node=None, # none to take efault provided
-            nested_mlflow_run=True
-        )
-        training_module.train()
+        :param taxonomy_node: the taxonomy subnode to train on
+        :return: Nothing at all
+        """
 
-        for child_taxonomy in dataset_builder.taxonomy.children:
+        with mlflow.start_run(run_name=f"Run_{taxonomy_node.uri}", nested=True):
+
+            logger.info("Training parent model")
+            training_module = get_training_module(
+                config=config,
+                logger=logger,
+                base_model_id=model_id,
+                dataset_builder=copy.deepcopy(dataset_builder),
+                sub_node=taxonomy_node.uri,
+                nested_mlflow_run=True
+            )
+            training_module.train()
 
             try:
-                logger.info(f"Training for {child_taxonomy.uri}. {child_taxonomy.label}")
-
-                training_module = get_training_module(
-                    config=config,
-                    logger=logger,
-                    base_model_id=model_id,
-                    dataset_builder=copy.deepcopy(dataset_builder),
-                    sub_node=child_taxonomy.uri,
-                    nested_mlflow_run=True
-                )
-                training_module.train()
+                for child_taxonomy in taxonomy_node.children:
+                    train(taxonomy_node=child_taxonomy)
             except Exception as ex:
-                logger.info(f"Failed on {child_taxonomy.uri}, exception: {ex}")
+                logger.warning(f"Failed on {child_taxonomy.uri}, exception: {ex}")
+
+
+    train(dataset_builder.taxonomy)
 
 
 if __name__ == "__main__":
