@@ -53,6 +53,8 @@ class DistilBertTraining(Training, ABC):
         self.sub_node = sub_node
         self.nested_mlflow_run = nested_mlflow_run
 
+        self.mlflow_run = mlflow.start_run(nested=self.nested_mlflow_run, run_name=f"DISTIL_BERT{uuid4().hex}")
+
         self.config.run.dataset.tokenize = True
         mlflow.transformers.autolog()
 
@@ -147,54 +149,56 @@ class DistilBertTraining(Training, ABC):
         )
 
     def train(self):
-        with mlflow.start_run(nested=self.nested_mlflow_run):
-            training_args = TrainingArguments(
-                output_dir='./results',
-                num_train_epochs=self.config.run.training.arguments.num_train_epochs,
-                per_device_train_batch_size=self.config.run.training.arguments.per_device_train_batch_size,
-                per_device_eval_batch_size=self.config.run.training.arguments.per_device_eval_batch_size,
-                warmup_steps=self.config.run.training.arguments.warmup_steps,
-                weight_decay=self.config.run.training.arguments.weight_decay,
-                logging_dir=os.path.join(self.train_folder, "logs"),
-                load_best_model_at_end=self.config.run.training.arguments.load_best_model_at_end,
-                evaluation_strategy=self.config.run.training.arguments.evaluation_strategy,
-                save_strategy=self.config.run.training.arguments.save_strategy,
-                dataloader_pin_memory=self.config.run.training.arguments.dataloader_pin_memory,
-            )
 
-            trainer = MultilabelTrainer(
-                model=self.model,
-                args=training_args,
-                train_dataset=self.train_ds,
-                eval_dataset=self.eval_ds,
-                compute_metrics=self.compute_metrics,
-            )
+        training_args = TrainingArguments(
+            output_dir='./results',
+            num_train_epochs=self.config.run.training.arguments.num_train_epochs,
+            per_device_train_batch_size=self.config.run.training.arguments.per_device_train_batch_size,
+            per_device_eval_batch_size=self.config.run.training.arguments.per_device_eval_batch_size,
+            warmup_steps=self.config.run.training.arguments.warmup_steps,
+            weight_decay=self.config.run.training.arguments.weight_decay,
+            logging_dir=os.path.join(self.train_folder, "logs"),
+            load_best_model_at_end=self.config.run.training.arguments.load_best_model_at_end,
+            evaluation_strategy=self.config.run.training.arguments.evaluation_strategy,
+            save_strategy=self.config.run.training.arguments.save_strategy,
+            dataloader_pin_memory=self.config.run.training.arguments.dataloader_pin_memory,
+        )
 
-            trainer.train()
-            best_model_results = trainer.evaluate()
+        trainer = MultilabelTrainer(
+            model=self.model,
+            args=training_args,
+            train_dataset=self.train_ds,
+            eval_dataset=self.eval_ds,
+            compute_metrics=self.compute_metrics,
+        )
 
-            mlflow.log_metrics(best_model_results, step=self.count_flag)
-            mlflow.log_artifacts(self.train_folder)
+        trainer.train()
+        best_model_results = trainer.evaluate()
 
-            components = dict(
-                model=trainer.model,
-                tokenizer=self.tokenizer
-            )
+        mlflow.log_metrics(best_model_results, step=self.count_flag)
+        mlflow.log_artifacts(self.train_folder)
 
-            model_flavour = "distil_bert"
-            taxonomy_name = self.dataset_builder.taxonomy.uri.split('/')[-1].lower()
+        components = dict(
+            model=trainer.model,
+            tokenizer=self.tokenizer
+        )
 
-            if hasattr(self.train_dataset, "sub_node_taxo"):
-                sub_taxonomy_name = "_".join(self.train_dataset.sub_node_taxo.label.split())
-            else:
-                sub_taxonomy_name = "parent_node"
+        model_flavour = "distil_bert"
+        taxonomy_name = self.dataset_builder.taxonomy.uri.split('/')[-1].lower()
 
-            model_name = "__".join([model_flavour, taxonomy_name, sub_taxonomy_name]).lower()
-            mlflow.transformers.log_model(
-                transformers_model=components,
-                registered_model_name=model_name,
-                artifact_path="model"
-            )
+        if hasattr(self.train_dataset, "sub_node_taxo"):
+            sub_taxonomy_name = "_".join(self.train_dataset.sub_node_taxo.label.split())
+        else:
+            sub_taxonomy_name = "parent_node"
+
+        model_name = "__".join([model_flavour, taxonomy_name, sub_taxonomy_name]).lower()
+        mlflow.transformers.log_model(
+            transformers_model=components,
+            registered_model_name=model_name,
+            artifact_path="model"
+        )
+
+        self.mlflow_run.end_run()
 
     def __call__(self):
         self.train()
