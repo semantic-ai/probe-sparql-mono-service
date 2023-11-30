@@ -160,7 +160,7 @@ class Taxonomy(Base):
 
         self.logger.debug(f"Level: {self.level}, current_depth: {curr_depth}, max_depth: {max_depth}")
 
-        if self.label:
+        if self.level != 0:  # more precise check if it is the parent node
             if not include_tree_indication:
                 label = self.label
 
@@ -206,10 +206,6 @@ class Taxonomy(Base):
             sub_nodes=child_response
         )
 
-
-
-
-
     def get_labels_for_node(
             self,
             search_term: str,
@@ -242,7 +238,7 @@ class Taxonomy(Base):
                 taxonomy_node = v
 
         self.logger.info(f"Taxonomy node: {taxonomy_node}")
-        return [c.get("label")for c in taxonomy_node.get("children", [])]
+        return [c.get("label") for c in taxonomy_node.get("children", [])]
 
     @wrap(entering, exiting)
     def _remap_tree(
