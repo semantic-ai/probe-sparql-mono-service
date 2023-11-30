@@ -24,6 +24,7 @@ def main(
         model_id: str = None,
         train_test_split: bool = True,
         checkpoint_folder: str = None,
+        max_depth: int = 2,
         taxonomy_url: str = "http://stad.gent/id/concepts/gent_words"
 ):
     """
@@ -39,6 +40,8 @@ def main(
     Example usage:
         >>>
 
+    :param max_depth:
+        The maximum depth the taxonomy tree training should be used on
     :param train_flavour:
         The specific type of model training you would want, this is a one on one mapping with the training flavour enum
         It allows you to select a specific type of model you would like to train (BERT, DISTIL_BERT, SETFIT)
@@ -103,33 +106,35 @@ def main(
             checkpoint_folder=checkpoint_folder
         )
 
-    def train(taxonomy_node: Taxonomy) -> None:
+    def train(taxonomy_node: Taxonomy, depth: int = 1) -> None:
         """
         Function to execute recursive training
 
+        :param depth: the current depth the training is executed on
         :param taxonomy_node: the taxonomy subnode to train on
         :return: Nothing at all
         """
 
-        with mlflow.start_run(run_name=f"Run_{taxonomy_node.uri}", nested=True):
-
-            logger.info("Training parent model")
+        with mlflow.start_run(run_name=f"{train_flavour}_{taxonomy_node.uri}", nested=True):
             training_module = get_training_module(
                 config=config,
                 logger=logger,
                 base_model_id=model_id,
                 dataset_builder=copy.deepcopy(dataset_builder),
-                sub_node=taxonomy_node.uri,
+                sub_node=None if depth == 1 else taxonomy_node.uri,
                 nested_mlflow_run=True
             )
             training_module.train()
 
             try:
+                new_depth = depth + 1
                 for child_taxonomy in taxonomy_node.children:
-                    train(taxonomy_node=child_taxonomy)
+                    if new_depth > max_depth:
+                        logger.info(f"Did not train on {child_taxonomy.label} since its beyond the max defined depth")
+                    else:
+                        train(taxonomy_node=child_taxonomy, depth=new_depth)
             except Exception as ex:
                 logger.warning(f"Failed on {child_taxonomy.uri}, exception: {ex}")
-
 
     train(dataset_builder.taxonomy)
 

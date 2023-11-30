@@ -48,12 +48,8 @@ class BertTraining(Training, ABC):
             dataset_builder=dataset_builder
         )
 
-
-
         self.sub_node = sub_node
         self.nested_mlflow_run=nested_mlflow_run
-
-        self.mlflow_run = mlflow.start_run(nested=self.nested_mlflow_run, run_name=f"BERT_{uuid4().hex}")
 
         self.config.run.dataset.tokenize = True
         mlflow.transformers.autolog()
@@ -221,5 +217,3 @@ class BertTraining(Training, ABC):
             registered_model_name=model_name,
             artifact_path="model"
         )
-
-        self.mlflow_run.end_run()

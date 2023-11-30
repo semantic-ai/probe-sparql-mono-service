@@ -75,16 +75,16 @@ class MultilabelTrainingDataset(TrainDataset):
 
         labels = []
 
-        self.logger.info(f"len {len(self.dataset)}")
+        self.logger.debug(f"len {len(self.dataset)}")
         selected_record = self.dataset[idx]
-        self.logger.info(f"selected_record: {selected_record}")
+        self.logger.debug(f"selected_record: {selected_record}")
 
         input_labels = selected_record.get("labels", None)
 
         if input_labels is None:
             input_labels = []
 
-        self.logger.info(f"input labels: {input_labels}")
+        self.logger.debug(f"input labels: {input_labels}")
 
         for label in input_labels:
             label_in_tree = self.taxonomy.find(label)
