@@ -84,11 +84,11 @@ class RequestHandler:
 
             except requests.exceptions.Timeout as ex:
                 retries += 1
-                self.logger.warning(f"Request execution timed out")
+                self.logger.error(f"Request execution timed out")
 
             except Exception as Ex:
                 retries += 1
-                self.logger.warning(f"During execution of the request, the following error occured: {traceback.format_exc()}")
+                self.logger.error(f"During execution of the request, the following error occured: {traceback.format_exc()}")
 
             finally:
                 retries += 1
