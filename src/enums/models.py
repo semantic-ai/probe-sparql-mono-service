@@ -17,15 +17,15 @@ class ModelType(str, enum.Enum):
     ZEROSHOT_REGULAR: str = "zeroshot_regular"
     ZEROSHOT_SENTENCE: str = "zeroshot_sentence"
     ZEROSHOT_CHUNKED: str = "zeroshot_chunked"
-    ZEROSHOT_CHILD_LABELS: str = "zeroshot_child_labels"
+    ZEROSHOT_CHILD_LABELS: str = "_zeroshot_child_labels"
 
     # embeddings
-    EMBEDDING_CHILD_LABELS: str = "embedding_child_labels"
+    EMBEDDING_CHILD_LABELS: str = "_embedding_child_labels"
     EMBEDDING_REGULAR: str = "embedding_regular"
     EMBEDDING_SENTENCE: str = "embedding_sentence"
     EMBEDDING_CHUNKED: str = "embedding_chunked"
-    EMBEDDING_GROUND_UP: str = "embedding_ground_up"
-    EMBEDDING_GROUND_UP_GREEDY: str = "embedding_ground_up_greedy"
+    EMBEDDING_GROUND_UP: str = "_embedding_ground_up"
+    EMBEDDING_GROUND_UP_GREEDY: str = "_embedding_ground_up_greedy"
 
     # setfit
 
