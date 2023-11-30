@@ -81,7 +81,7 @@ class RequestHandler:
                 if succes := r.ok:
                     return r.json()
                 else:
-                    self.logger.info(f"response: {r.text}")
+                    self.logger.info(f"response: {r.status_code} {r.text}")
 
             except requests.exceptions.Timeout as ex:
                 self.logger.info(f"Request execution timed out: {ex}")

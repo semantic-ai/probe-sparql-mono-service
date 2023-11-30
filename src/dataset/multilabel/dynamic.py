@@ -98,21 +98,23 @@ class DynamicMultilabelTrainingDataset(TrainDataset):
 
         # if no sub_node is specified, there shouldn't be any adaptations to the dataset
         if self.sub_node is None:
-            self.logger.info("no triggered for sub node")
+            self.logger.debug("no triggered for sub node")
 
             # setting some required variables
             self.candid_labels = self.taxonomy.get_labels(max_depth=1)
             self.node_depth = 0
             self.label_distribution = self.binarized_label_dictionary
+            self.sub_node_taxo = self.taxonomy
             return
 
-        self.logger.info("Triggerd subselection of dataset")
+        self.logger.debug("Triggerd subselection of dataset")
+        self.logger.debug(f"searching for {self.sub_node}")
 
         # selecting the specific node from the taxonomy
         sub_node_information: dict = self.taxonomy.find(
             search_term=self.sub_node.lower(),
             search_kind=TaxonomyFindTypes.URI if self.sub_node.startswith("http") else TaxonomyFindTypes.LABEL,
-            with_children=True
+            with_children=True,
         )
         self.node_depth: int = len(sub_node_information)  # getting taxonomy depth
 
@@ -138,8 +140,8 @@ class DynamicMultilabelTrainingDataset(TrainDataset):
             for label in labels_in_row:
                 label_information = self.taxonomy.find(label)
 
-                self.logger.info(f"requested sub_node: {self.sub_node_taxo.todict()}")
-                self.logger.info(f"label information: {label_information}")
+                self.logger.debug(f"requested sub_node: {self.sub_node_taxo.todict()}")
+                self.logger.debug(f"label information: {label_information}")
 
                 # check if the label length is at-least deeper than the master node (otherwise irrelevant for training)
                 if len(label_information) > len(sub_node_information):

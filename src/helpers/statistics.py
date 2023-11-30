@@ -7,6 +7,7 @@ if TYPE_CHECKING:
     from ..config import Config
     from ..data_models import Taxonomy
     from ..sparql import RequestHandler
+    from ..dataset import DynamicMultilabelTrainingDataset
     from logging import Logger
 
 from ..dataset import DatasetBuilder, create_dataset
@@ -18,6 +19,7 @@ import mlflow
 from uuid import uuid4
 import matplotlib.pyplot as plt
 from textwrap import wrap
+from copy import deepcopy
 
 
 class GenerateTaxonomyStatistics:
@@ -55,12 +57,19 @@ class GenerateTaxonomyStatistics:
         self.taxonomy_name = taxonomy.uri
         self.dataset = dataset
         self.max_level = max_level
-        self.local_storage_dir = os.path.join(
+        self.local_storage_dir_level_based = os.path.join(
             local_storage_dir,
-            self.taxonomy_name.split("/")[-1]
+            self.taxonomy_name.split("/")[-1],
+            "level_based"
+        )
+        self.local_storage_dir_node_based = os.path.join(
+            local_storage_dir,
+            self.taxonomy_name.split("/")[-1],
+            "node_based"
         )
 
-        os.makedirs(self.local_storage_dir, exist_ok=True)
+        os.makedirs(self.local_storage_dir_node_based, exist_ok=True)
+        os.makedirs(self.local_storage_dir_level_based, exist_ok=True)
 
         self._prep_dataset()
 
@@ -70,6 +79,71 @@ class GenerateTaxonomyStatistics:
 
         :return:
         """
+
+        def save_node_plot(config: Config, sub_node: str = None):
+            """
+            Recursive usable method that creates all sub plots
+
+            :param taxonomy: taxonomy
+            :param config:
+            :param sub_node:
+            :return:
+            """
+            ds = create_dataset(
+                config=_config,
+                logger=self.logger,
+                dataset=deepcopy(self.dataset),  # edits shared memory otherwise
+                taxonomy=deepcopy(self.taxonomy),
+                sub_node=sub_node
+            )
+
+            target_names = list(self.ds.binarized_label_dictionary.keys())
+            self.logger.info(f"target names: len({len(target_names)}) {target_names}")
+
+            # loop through for label triggering
+            for d in ds:
+                pass
+
+            distribution = ds.label_distribution
+            self.logger.info(f"distribution: {distribution}")
+            if hasattr(ds, "sub_node_taxo"):
+                sub_taxonomy_name = "_".join(ds.sub_node_taxo.label.split())
+            else:
+                sub_taxonomy_name = "parent_node"
+
+            plt.figure(figsize=(24, 6))
+            plt.subplots_adjust(bottom=0.6)
+            plt.bar(
+                ['\n'.join(wrap(label, 50)) for label in list(distribution.keys())],
+                list(distribution.values()),
+            )
+            plt.xticks(rotation=90)
+            plt.savefig(os.path.join(self.local_storage_dir_node_based, f"distribution_node_{sub_taxonomy_name.replace('/', '')}.png"))
+            plt.clf()
+
+            self.logger.info("STEPPING IN -------------------------------")
+            self.logger.info(f"Target labels {target_names}")
+
+            for child in ds.sub_node_taxo.children:
+                if len(child.children) == 0: continue
+                self.logger.info(f"Starting generation for {child.label}")
+                save_node_plot(
+                    config=config,
+                    sub_node=child.uri
+                )
+
+        _config = self.config
+        _config.run.dataset.type = DatasetType.DYNAMIC
+
+        self.logger.info("Starting node based taxonomy calculations")
+
+        save_node_plot(
+            config=_config,
+            sub_node=None
+        )
+
+        self.logger.info("Starting level based taxonomy calculations")
+        # regular level based plots:
         for i in range(1, self.max_level + 1):
             self._generate_level_stats(i)
 
@@ -131,7 +205,7 @@ class GenerateTaxonomyStatistics:
             list(label_log.values()),
         )
         plt.xticks(rotation=90)
-        plt.savefig(os.path.join(self.local_storage_dir, f"distribution_label_level_{level:02}.png"))
+        plt.savefig(os.path.join(self.local_storage_dir_level_based, f"distribution_level_{level:02}.png"))
         plt.clf()
 
     def __call__(self, *args, **kwargs) -> None:
