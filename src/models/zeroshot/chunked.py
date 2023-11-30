@@ -54,8 +54,15 @@ class ChunkedZeroshotModel(ZeroshotModel):
         self.logger.debug(f"Chuncked data: {text_chunks}")
 
         labels = kwargs.get("labels", self.labels)
+        self.logger.info(f"predicting for: {labels}")
 
         for sentence in text_chunks:
+            self.logger.info(f"predciting for sentence: {sentence}")
+
+            # extra safety for potential bug?
+            if isinstance(sentence, list):
+                sentence = sentence[0]
+
             result = self.pipe(sentence, labels, multi_label=multi_label)
             zeroshot_scores.append(result.get("scores"))
 
