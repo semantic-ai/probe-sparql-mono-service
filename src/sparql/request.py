@@ -68,7 +68,7 @@ class RequestHandler:
             if retries >= self.config.request.max_retries:
                 self.logger.warning(
                     f"Status NOK - retry: {retries}, max_retry: {self.config.request.max_retries}")
-                raise Exception(f"Max retries exceeded for sparql request with exception: {ex}")
+                raise Exception(f"Max retries exceeded for sparql request with exception: {last_ex}")
 
             try:
                 r = requests.post(
