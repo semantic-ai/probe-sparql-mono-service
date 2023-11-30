@@ -6,6 +6,8 @@ from .utils import LoggingBase
 from .enums import ModelType, DatasetType, DecisionQuery
 
 from fire import Fire
+from uuid import uuid4
+import mlflow
 
 
 def main(
@@ -143,69 +145,71 @@ def main(
         # creating checkpoint from pulled dataset
         checkpoint_location = dataset_builder.create_checkpoint("data_checkpoint")
 
-    # creating all permutations
-    for dataset_type in dataset_types:
-        config.run.dataset.type = dataset_type
+    with mlflow.start_run(run_name=f"bencharmking_{uuid4().hex}"):
+        # creating all permutations
+        for dataset_type in dataset_types:
+            config.run.dataset.type = dataset_type
 
-        for model_type in model_types:
-            config.run.model.type = model_type
+            for model_type in model_types:
+                config.run.model.type = model_type
 
-            try:
-                match model_type.split("_")[0]:
+                try:
+                    match model_type.split("_")[0]:
 
-                    case "embedding":
-                        benchmark = EmbeddingSimilarityBenchmark(
-                            config=config,
-                            logger=logger,
-                            request_handler=request_handler,
-                            model_ids=model_ids,
-                            taxonomy_reference=taxonomy_uri,
-                            nested_mlflow_run=True,
-                            checkpoint_dir=checkpoint_location
-                        )
-                    case "huggingface":
-                        benchmark = HuggingfaceBenchmark(
-                            config=config,
-                            logger=logger,
-                            request_handler=request_handler,
-                            model_ids=model_ids,
-                            taxonomy_reference=taxonomy_uri,
-                            nested_mlflow_run=True,
-                            checkpoint_dir=checkpoint_location
-                        )
-                    case "zeroshot":
-                        benchmark = ZeroshotBenchmark(
-                            config=config,
-                            logger=logger,
-                            request_handler=request_handler,
-                            model_ids=model_ids,
-                            taxonomy_reference=taxonomy_uri,
-                            nested_mlflow_run=True,
-                            checkpoint_dir=checkpoint_location
-                        )
-                    case "hybrid":
-                        raise NotImplementedError("Hybrid models currently is not implemented (does not make sense)")
-                        # HybridBenchmark(
-                        #     config=config,
-                        #     logger=logger,
-                        #     request_handler=request_handler,
-                        #     #
-                        #     # fix the rest here
-                        #     #
-                        #     taxonomy_reference=taxonomy_uri,
-                        #     nested_mlflow_run=True,
-                        #     checkpoint_dir=checkpoint_location
-                        # )
-                    case _:
-                        raise Exception("Model not in model type list")
+                        case "embedding":
+                            benchmark = EmbeddingSimilarityBenchmark(
+                                config=config,
+                                logger=logger,
+                                request_handler=request_handler,
+                                model_ids=model_ids,
+                                taxonomy_reference=taxonomy_uri,
+                                nested_mlflow_run=True,
+                                checkpoint_dir=checkpoint_location
+                            )
+                        case "huggingface":
+                            benchmark = HuggingfaceBenchmark(
+                                config=config,
+                                logger=logger,
+                                request_handler=request_handler,
+                                model_ids=model_ids,
+                                taxonomy_reference=taxonomy_uri,
+                                nested_mlflow_run=True,
+                                checkpoint_dir=checkpoint_location
+                            )
+                        case "zeroshot":
+                            benchmark = ZeroshotBenchmark(
+                                config=config,
+                                logger=logger,
+                                request_handler=request_handler,
+                                model_ids=model_ids,
+                                taxonomy_reference=taxonomy_uri,
+                                nested_mlflow_run=True,
+                                checkpoint_dir=checkpoint_location
+                            )
+                        case "hybrid":
+                            raise NotImplementedError(
+                                "Hybrid models currently is not implemented (does not make sense)")
+                            # HybridBenchmark(
+                            #     config=config,
+                            #     logger=logger,
+                            #     request_handler=request_handler,
+                            #     #
+                            #     # fix the rest here
+                            #     #
+                            #     taxonomy_reference=taxonomy_uri,
+                            #     nested_mlflow_run=True,
+                            #     checkpoint_dir=checkpoint_location
+                            # )
+                        case _:
+                            raise Exception("Model not in model type list")
 
-                benchmark()
+                    benchmark()
 
-            except Exception as ex:
-                logger.error(
-                    f"Benchmarking failed with current configuration model_type:{model_type}, dataset_type: {dataset_type}")
-                logger.error(f"Exception that was caught: {ex}")
-                raise ex
+                except Exception as ex:
+                    logger.error(
+                        f"Benchmarking failed with current configuration model_type:{model_type}, dataset_type: {dataset_type}")
+                    logger.error(f"Exception that was caught: {ex}")
+                    raise ex
 
 
 if __name__ == "__main__":
