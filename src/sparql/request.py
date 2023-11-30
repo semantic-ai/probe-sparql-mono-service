@@ -78,21 +78,22 @@ class RequestHandler:
                     auth=self.auth,
                 )
 
-                self.logger.info(f"response: {r.text}")
                 if succes := r.ok:
                     return r.json()
+                else:
+                    self.logger.info(f"response: {r.text}")
 
             except requests.exceptions.Timeout as ex:
                 self.logger.info(f"Request execution timed out: {ex}")
                 last_ex = "TIMEOUT"
 
             except Exception as ex:
-                self.logger.info(f"During execution of the request, the following error occured: {traceback.format_exc()}")
+                self.logger.info(
+                    f"During execution of the request, the following error occured: {traceback.format_exc()}")
                 last_ex = ex
 
             finally:
                 retries += 1
-
 
     def post2json(self, query: str, endpoint: EndpointType = None):
         """
