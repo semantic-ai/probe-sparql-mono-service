@@ -49,7 +49,7 @@ class ChunkedZeroshotModel(ZeroshotModel):
                 text_buffer = []
                 cur_length = 0
         else:
-            text_chunks.append(text_buffer)
+            text_chunks.append(". ".join(text_buffer))
 
         self.logger.debug(f"Chuncked data: {text_chunks}")
 
@@ -58,10 +58,6 @@ class ChunkedZeroshotModel(ZeroshotModel):
 
         for sentence in text_chunks:
             self.logger.info(f"predciting for sentence: {sentence}")
-
-            # extra safety for potential bug?
-            if isinstance(sentence, list):
-                sentence = sentence[0]
 
             result = self.pipe(sentence, labels, multi_label=multi_label)
             zeroshot_scores.append(result.get("scores"))
