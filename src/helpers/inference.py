@@ -553,3 +553,4 @@ class Inference:
                 labels=labels
             )
             self._single_insert(query)
+            self.logger.info(f"Succesfully inserted predictions for: {decision_uri}")
