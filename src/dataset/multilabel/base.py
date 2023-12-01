@@ -153,7 +153,7 @@ class MultilabelTrainingDataset(TrainDataset):
 
         else:
             return dict(
-                text=text,
+                text=" ".join(text.split()),
                 decision_uri=decision_uri,
                 labels=labels
             )
