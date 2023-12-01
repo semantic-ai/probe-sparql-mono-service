@@ -39,7 +39,7 @@ def main(
         logger=logger
     )
 
-    with mlflow.start_run():
+    with mlflow.start_run(tags={"dataset_type": dataset_type , "taxonomy": taxonomy_uri}):
 
         # build dataset
         if checkpoint_location is None:
