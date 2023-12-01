@@ -66,6 +66,7 @@ class MultiLabelSecondLevelFullText(MultilabelTrainingDataset):
             articles = "\n\n".join(articles)
 
         return f"""\
+        Een besluit over: 
         {short_title}: 
 
         {motivation} 

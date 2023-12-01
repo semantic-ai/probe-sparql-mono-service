@@ -58,7 +58,7 @@ class MultiLabelTopLevelDescriptionBased(MultiLabelTopLevelFullText):
         description = data_record.get("motivation", "")
 
         return f"""\
-        {description}
+        Een besluit over: {description}
         """
 
     _get_text.__doc__ += MultilabelTrainingDataset._get_text.__doc__

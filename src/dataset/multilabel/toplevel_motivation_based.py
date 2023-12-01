@@ -58,7 +58,7 @@ class MultiLabelTopLevelMotivationBased(MultiLabelTopLevelFullText):
         motivation = data_record.get("motivation", "")
 
         return f"""\
-        {motivation}
+        Een besluit over: {motivation}
         """
 
     _get_text.__doc__ += MultilabelTrainingDataset._get_text.__doc__

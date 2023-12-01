@@ -61,6 +61,7 @@ class MultiLabelTopLevelArticleBased(MultiLabelTopLevelFullText):
             articles = "\n\n".join(articles)
 
         return f"""\
+        Een besluit over: 
         Artikels:
         {articles}
         """

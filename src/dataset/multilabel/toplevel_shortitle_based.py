@@ -53,7 +53,7 @@ class MultiLabelTopLevelShortTitleBased(MultiLabelTopLevelFullText):
         short_title = data_record.get("short_title", "")
 
         return f"""\
-        {short_title}
+        Een besluit over: {short_title}
         """
 
     _get_text.__doc__ += MultilabelTrainingDataset._get_text.__doc__

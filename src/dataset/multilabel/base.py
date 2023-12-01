@@ -113,7 +113,7 @@ class MultilabelTrainingDataset(TrainDataset):
         :return: a list of integer values where the labels should be predicted
         """
         data_record = self.dataset[idx]
-        motivation = data_record.get("motivation", "")
+        motivation = "Een besluit over: " + data_record.get("motivation", "")
 
         return motivation
 
