@@ -51,9 +51,9 @@ class ChunkedEmbeddingModel(EmbeddingModel):
 
         for sentence in text_chunks:
 
-            if len(sentence) < 5:
-                # skipping sentences that are extremely short
-                continue
+            # if len(sentence) < 5:
+            #     # skipping sentences that are extremely short
+            #     continue
 
             sentence_embedding = np.asarray(self._embed(sentence))
 

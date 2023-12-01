@@ -58,9 +58,9 @@ class ChunkedZeroshotModel(ZeroshotModel):
 
         for sentence in text_chunks:
 
-            if len(sentence) < 5:
-                # skipping sentences that are extremely short
-                continue
+            # if len(sentence) < 5:
+            #     # skipping sentences that are extremely short
+            #     continue
 
             self.logger.debug(f"predciting for sentence: {sentence}")
 

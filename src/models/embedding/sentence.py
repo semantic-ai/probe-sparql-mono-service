@@ -18,9 +18,9 @@ class SentenceEmbeddingModel(EmbeddingModel):
 
         for sentence in sent_tokenize(text, language="dutch"):
 
-            if len(sentence) < 5:
-                # skipping sentences that are extremely short
-                continue
+            # if len(sentence) < 5:
+            #     # skipping sentences that are extremely short
+            #     continue
 
             sentence_embedding = np.asarray(self._embed(sentence))
             similarity_scores.append(

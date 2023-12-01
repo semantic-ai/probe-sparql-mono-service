@@ -27,9 +27,9 @@ class SentenceZeroshotModel(ZeroshotModel):
         labels = kwargs.get("labels", self.labels)
 
         for sentence in sent_tokenize(text, language="dutch"):
-            if len(sentence) < 5:
-                # skipping sentences that are extremely short
-                continue
+            # if len(sentence) < 5:
+            #     # skipping sentences that are extremely short
+            #     continue
 
             self.logger.debug(f"pred for: '{sentence}'")
             result = self.pipe(sentence, labels, multi_label=multi_label)
