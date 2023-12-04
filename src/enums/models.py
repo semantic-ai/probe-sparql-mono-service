@@ -36,6 +36,11 @@ class ModelType(str, enum.Enum):
     HYBRID_BASE_MODEL: str = "hybrid_base_model"
     HYBRID_SELECTIVE_MODEL: str = "hybrid_selective_model"
 
+    # topic modeling
+    REGULAR_TOPIC_MODEL: str = "topic_model_regular"
+    HIERARCHIC_TOPIC_MODEL: str = "topic_model_hierarchic"
+    DYNAMIC_TOPIC_MODEL: str = "topic_model_dynamic"
+
     @classmethod
     def _list(cls):
         """

@@ -7,6 +7,7 @@ if TYPE_CHECKING:
     from ..config import Config
     from logging import Logger
     from ..data_models import Taxonomy
+    from ..dataset import DatasetBuilder
 
 from .base import Model
 from .embedding import EmbeddingModel, SentenceEmbeddingModel, ChunkedEmbeddingModel, GroundUpRegularEmbeddingModel, \
@@ -14,7 +15,7 @@ from .embedding import EmbeddingModel, SentenceEmbeddingModel, ChunkedEmbeddingM
 from .zeroshot import ZeroshotModel, SentenceZeroshotModel, ChunkedZeroshotModel, ChildLabelsZeroshotModel
 from .classifier import ClassifierModel, HuggingfaceModel
 from .hybrid import HybridModel, SelectiveHybridModel
-from .topic_models import RegularTopicModel
+from .topic_models import RegularTopicModel, HierarchicTopicModel, DynamicTopicModel
 
 from ..enums import ModelType
 
@@ -183,3 +184,53 @@ def get_model(
 
         case _:
             raise NotImplementedError("No such model available")
+
+
+def get_topic_model(
+        model_type: ModelType,
+        config: Config,
+        logger: Logger,
+        dataset_builder: DatasetBuilder
+):
+    """
+    Model provided specifically for the topic models.
+
+
+    :param model_type: the specific model type requested
+    :param config: the global config object
+    :param logger: the global logger object
+    :param dataset_builder: the dataset builder object containing all the relevant information that could be used for
+                            the topic modeling
+    :return: An instance of the requested topic modeling
+    """
+
+    match model_type:
+
+        case ModelType.REGULAR_TOPIC_MODEL | ModelType.REGULAR_TOPIC_MODEL.value:
+            logger.info("Selected RegularTopicModel")
+            return RegularTopicModel(
+                config=config,
+                logger=logger,
+                dataset_builder=dataset_builder
+            )
+
+        case ModelType.DYNAMIC_TOPIC_MODEL | ModelType.DYNAMIC_TOPIC_MODEL.value:
+            logger.info("Selected DynamicTopicModel")
+            return DynamicTopicModel(
+                config=config,
+                logger=logger,
+                dataset_builder=dataset_builder
+            )
+
+        case ModelType.HIERARCHIC_TOPIC_MODEL | ModelType.HIERARCHIC_TOPIC_MODEL.value:
+            logger.info("Selected HierarchicTopicModel")
+            return HierarchicTopicModel(
+                config=config,
+                logger=logger,
+                dataset_builder=dataset_builder
+            )
+
+
+        case _:
+            raise NotImplementedError("No such topic-model available")
+

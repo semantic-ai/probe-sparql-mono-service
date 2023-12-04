@@ -26,7 +26,7 @@ def main(
     This goes on recursively until it has reached the maximum node_depth for the provided config.
 
     :param taxonomy_uri: the taxonomy to use for the prediction
-    :param model_config: the json config to use to create the prediciton trees with
+    :param model_config: the json config to use to create the prediction trees with
     :param dataset_type: the type of dataset to use for the model training
     :param checkpoint_folder: path to a local checkpoint, this can easily be used when debugging locally.
     """

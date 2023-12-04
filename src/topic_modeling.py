@@ -11,8 +11,8 @@ from .config import Config
 from .sparql import RequestHandler
 from .utils import LoggingBase
 from .training import get_training_module
-from .enums import DecisionQuery, DatasetType, TrainingFlavours
-from .models import RegularTopicModel
+from .enums import DecisionQuery, DatasetType, ModelType
+from .models import get_topic_model
 
 import mlflow
 import fire
@@ -20,16 +20,20 @@ import copy
 
 
 def main(
-        checkpoint_folder: str = None,
-        taxonomy_uri: str = "http://stad.gent/id/concepts/gent_words"
+        dataset_type: DatasetType,
+        model_type: ModelType,
+        taxonomy_uri: str = "http://stad.gent/id/concepts/gent_words",
+        checkpoint_folder: str = None
 ):
 
     config = Config()
+    config.run.dataset.type = dataset_type
     logger = LoggingBase(config=config.logging).logger
     request_handler = RequestHandler(
         config=config,
         logger=logger
     )
+
 
     if checkpoint_folder is None:
         dataset_builder = DatasetBuilder.from_sparql(
@@ -49,7 +53,8 @@ def main(
             checkpoint_folder=checkpoint_folder
         )
 
-    topic_model = RegularTopicModel(
+    topic_model = get_topic_model(
+        model_type=model_type,
         config=config,
         logger=logger,
         dataset_builder=dataset_builder
