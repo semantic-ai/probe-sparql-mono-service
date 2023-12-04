@@ -14,6 +14,7 @@ from .embedding import EmbeddingModel, SentenceEmbeddingModel, ChunkedEmbeddingM
 from .zeroshot import ZeroshotModel, SentenceZeroshotModel, ChunkedZeroshotModel, ChildLabelsZeroshotModel
 from .classifier import ClassifierModel, HuggingfaceModel
 from .hybrid import HybridModel, SelectiveHybridModel
+from .topic_models import RegularTopicModel
 
 from ..enums import ModelType
 
