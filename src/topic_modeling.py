@@ -25,7 +25,6 @@ def main(
         taxonomy_uri: str = "http://stad.gent/id/concepts/gent_words",
         checkpoint_folder: str = None
 ):
-
     config = Config()
     config.run.dataset.type = dataset_type
     logger = LoggingBase(config=config.logging).logger
@@ -34,7 +33,6 @@ def main(
         logger=logger
     )
 
-
     if checkpoint_folder is None:
         dataset_builder = DatasetBuilder.from_sparql(
             config=config,
@@ -42,6 +40,7 @@ def main(
             request_handler=request_handler,
             taxonomy_uri=taxonomy_uri,
             query_type=DecisionQuery.ALL,
+            do_train_test_split=False
         )
         dataset_builder.create_checkpoint("data")
 
@@ -63,7 +62,5 @@ def main(
     topic_model.analyse()
 
 
-
-
-if __name__== "__main__":
+if __name__ == "__main__":
     fire.Fire(main)

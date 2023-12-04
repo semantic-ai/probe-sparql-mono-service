@@ -40,7 +40,7 @@ class HierarchicTopicModel(RegularTopicModel):
 
             tree = topic_model.get_topic_tree(hierarchical_topics)
 
-            with open(os.path.join(self.base_path, "topic_tree") , "w") as f:
+            with open(os.path.join(self.base_path, "topic_tree"), "w") as f:
                 f.write(tree)
 
             topic_model.visualize_hierarchy(
