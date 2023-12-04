@@ -5,7 +5,8 @@ from .regular import RegularTopicModel
 from scipy.cluster import hierarchy as sch
 from bertopic import BERTopic
 import mlflow, os
-
+from sentence_transformers import SentenceTransformer
+from umap import UMAP
 
 class HierarchicTopicModel(RegularTopicModel):
     """
@@ -19,18 +20,16 @@ class HierarchicTopicModel(RegularTopicModel):
 
     def analyse(self):
         with mlflow.start_run():
-            topic_model = BERTopic()
-            topics, probs = topic_model.fit_transform(self.docs)
+            sentence_model = SentenceTransformer(
+                "all-MiniLM-L6-v2" if self.embedding_model is None else self.embedding_model)
+            embeddings = sentence_model.encode(self.docs, show_progress_bar=False)
 
-            topic_model.visualize_documents(self.docs).write_html(
-                open(
-                    os.path.join(
-                        self.base_path,
-                        "visualized_documents.html"
-                    ),
-                    "w"
-                )
+            topic_model = BERTopic()
+            topics, probs = topic_model.fit_transform(
+                documents=self.docs,
+                embeddings=embeddings
             )
+
 
             linkage_function = lambda x: sch.linkage(x, 'single', optimal_ordering=True)
             hierarchical_topics = topic_model.hierarchical_topics(
@@ -50,6 +49,30 @@ class HierarchicTopicModel(RegularTopicModel):
                     os.path.join(
                         self.base_path,
                         "hierarchical_topics.html"
+                    ),
+                    "w"
+                )
+            )
+
+            hierarchical_topics = topic_model.hierarchical_topics(self.docs)
+            reduced_embeddings = UMAP(
+                n_neighbors=10,
+                n_components=2,
+                min_dist=0.0,
+                metric='cosine'
+            ).fit_transform(
+                embeddings
+            )
+
+            topic_model.visualize_hierarchical_documents(
+                docs=self.docs,
+                hierarchical_topics=hierarchical_topics,
+                reduced_embeddings=reduced_embeddings
+            ).write_html(
+                open(
+                    os.path.join(
+                        self.base_path,
+                        "hierarchic_visualized_topics.html"
                     ),
                     "w"
                 )
