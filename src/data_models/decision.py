@@ -640,5 +640,6 @@ class Decision(Base):
             articles=self.article_list,
             short_title=self.short_title,
             language=self.language,
-            labels=label_uris
+            labels=label_uris,
+            date=self.publication_date,
         )

@@ -22,6 +22,16 @@ class HierarchicTopicModel(RegularTopicModel):
             topic_model = BERTopic()
             topics, probs = topic_model.fit_transform(self.docs)
 
+            topic_model.visualize_documents(self.docs).write_html(
+                open(
+                    os.path.join(
+                        self.base_path,
+                        "visualized_documents.html"
+                    ),
+                    "w"
+                )
+            )
+
             linkage_function = lambda x: sch.linkage(x, 'single', optimal_ordering=True)
             hierarchical_topics = topic_model.hierarchical_topics(
                 docs=self.docs,
