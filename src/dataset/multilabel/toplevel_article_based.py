@@ -62,8 +62,7 @@ class MultiLabelTopLevelArticleBased(MultiLabelTopLevelFullText):
 
         return f"""\
         Een besluit over: 
-        Artikels:
-        {articles}
+        Artikels: {articles}
         """
 
     _get_text.__doc__ += MultilabelTrainingDataset._get_text.__doc__

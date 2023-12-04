@@ -70,11 +70,8 @@ class SingleTopLevel(TrainingDataset):
         articles = "\n".join(data_record.get("articles", []))
 
         return f"""\
-        {short_title}: 
-        
-        {motivation} 
-        Artikels:
-        {articles}
+        {short_title}: {motivation} 
+        Artikels: {articles}
         
         {description}
         """
@@ -83,4 +80,15 @@ class SingleTopLevel(TrainingDataset):
         label = self._get_label(idx) if self.config.run.dataset.get_label else []
         text = self._get_text(idx)
 
-        return dict(uri=self.dataset[idx].get("uri"), text=text, label=label)
+        # workaround for missing date, use short_title year reference if no date suplied
+        publication_date = self.dataset[idx].get("", None)
+
+        if publication_date is not None:
+            date = publication_date
+        else:
+            try:
+                date = int(self.dataset[idx].get("short_title").split("_")[0])
+            except:
+                date = -1
+
+        return dict(uri=self.dataset[idx].get("uri"), text=text, label=label, date=date)

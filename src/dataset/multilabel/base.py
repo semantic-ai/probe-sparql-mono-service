@@ -135,6 +135,17 @@ class MultilabelTrainingDataset(TrainDataset):
         text = self._get_text(idx)
         decision_uri = self.dataset[idx].get("uri")
 
+        # workaround for missing date, use short_title year reference if no date suplied
+        publication_date = self.dataset[idx].get("", None)
+
+        if publication_date is not None:
+            date = publication_date
+        else:
+            try:
+                date = int(self.dataset[idx].get("short_title").split("_")[0])
+            except:
+                date = -1
+
         if self.config.run.dataset.tokenize:
             self.logger.debug("tokenize")
             tokenized_text = self.tokenizer(
@@ -155,7 +166,8 @@ class MultilabelTrainingDataset(TrainDataset):
             return dict(
                 text=" ".join(text.split()),
                 decision_uri=decision_uri,
-                labels=labels
+                labels=labels,
+                date=date
             )
 
     @property

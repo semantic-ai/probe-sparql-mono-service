@@ -63,12 +63,9 @@ class MultiLabelTopLevelFullText(MultilabelTrainingDataset):
 
         return f"""\
         Een besluit over: 
-        {short_title}: 
-        {motivation} 
-        Artikels:
-        {articles}
-
-        {description}
+        {short_title}: {motivation} 
+        Artikels: {articles}
+        Description: {description}
         """
 
     _get_text.__doc__ += MultilabelTrainingDataset._get_text.__doc__

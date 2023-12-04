@@ -67,13 +67,9 @@ class MultiLabelSecondLevelFullText(MultilabelTrainingDataset):
 
         return f"""\
         Een besluit over: 
-        {short_title}: 
-
-        {motivation} 
-        Artikels:
-        {articles}
-
-        {description}
+        {short_title}: {motivation} 
+        Artikels: {articles}
+        description: {description}
         """
 
     def _get_label(self, idx: int) -> list[int]:
