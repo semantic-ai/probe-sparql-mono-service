@@ -75,7 +75,7 @@ def main(
     logger.info(f"Successfully created dataset")
 
     logger.info(f"Loading model config: {str(model_config)}")
-    # model_config = ast.literal_eval(str(model_config))
+    model_config = ast.literal_eval(str(model_config))
 
     model_tree = InferenceModelTree.from_model_config(
         config=config,
