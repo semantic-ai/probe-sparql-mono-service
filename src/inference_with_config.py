@@ -40,7 +40,7 @@ def main(
         config=config,
         logger=logger
     )
-
+    logger.info(f"type: {type(model_config)} {model_config}")
     logger.info(f"register custom config")
     model = Model(
         config=config.data_models,
@@ -61,6 +61,7 @@ def main(
             taxonomy_uri=taxonomy_uri,
             query_type=DecisionQuery.ALL,
             do_train_test_split=False,
+            limit=10
         )
         dataset_builder.create_checkpoint("/tmp/data")
 
