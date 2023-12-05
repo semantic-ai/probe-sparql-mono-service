@@ -10,21 +10,27 @@ from .dataset import DatasetBuilder
 from .config import Config
 from .sparql import RequestHandler
 from .utils import LoggingBase
-from .training import get_training_module
 from .enums import DecisionQuery, DatasetType, ModelType
 from .models import get_topic_model
 
-import mlflow
 import fire
-import copy
 
 
 def main(
         dataset_type: DatasetType,
         model_type: ModelType,
-        taxonomy_uri: str = "http://stad.gent/id/concepts/gent_words",
         checkpoint_folder: str = None
 ):
+    """
+    This function is the entrypoint for the topic modeling functionality.
+
+    It calls on the specified class to generate the topic modeling artifacts that can be user for further analysis
+
+    :param dataset_type: the type of dataset to use as input formatting
+    :param model_type:  the type of topic modeling to use
+    :param checkpoint_folder: a checkpoint that can be used to restore the input data from
+    :return:
+    """
     config = Config()
     config.run.dataset.type = dataset_type
     logger = LoggingBase(config=config.logging).logger
@@ -38,7 +44,6 @@ def main(
             config=config,
             logger=logger,
             request_handler=request_handler,
-            taxonomy_uri=taxonomy_uri,
             query_type=DecisionQuery.ALL,
             do_train_test_split=False
         )

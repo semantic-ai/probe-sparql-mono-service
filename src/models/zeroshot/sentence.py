@@ -22,16 +22,16 @@ class SentenceZeroshotModel(ZeroshotModel):
 
     @torch.inference_mode()
     def classify(self, text: str, multi_label: bool, **kwargs) -> dict[str, float]:
-
         zeroshot_scores = []
+        result = None
         labels = kwargs.get("labels", self.labels)
 
-        for sentence in sent_tokenize(text, language="dutch"):
-            # if len(sentence) < 5:
-            #     # skipping sentences that are extremely short
-            #     continue
+        self.logger.debug(f"Input text: {text}")
+        self.logger.debug(f"predicting for: {labels}")
 
-            self.logger.debug(f"pred for: '{sentence}'")
+        for sentence in sent_tokenize(text, language="dutch"):
+
+            self.logger.debug(f"predicting for: '{sentence}'")
             result = self.pipe(sentence, labels, multi_label=multi_label)
             zeroshot_scores.append(result.get("scores"))
 

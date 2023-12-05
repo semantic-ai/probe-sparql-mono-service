@@ -28,17 +28,19 @@ class ChunkedZeroshotModel(ZeroshotModel):
 
         zeroshot_scores = []
         result = None
+        labels = kwargs.get("labels", self.labels)
 
         self.logger.debug(f"Input text: {text}")
+        self.logger.debug(f"predicting for: {labels}")
 
-        # logic that checks tokenized lenght and optimizes
+        # logic that checks tokenized length
         text_chunks = []
         text_buffer = []
         cur_length = 0
 
         for sentence in sent_tokenize(text):
             tokenized_length = len(self.tokenizer.tokenize(sentence))
-            self.logger.debug(f"Current_lenght {cur_length}, new_slice_length: {tokenized_length}")
+            self.logger.debug(f"Current_length {cur_length}, new_slice_length: {tokenized_length}")
 
             if (cur_length + tokenized_length) < kwargs.get("max_length", 512): # hardcoded max length for now
                 cur_length += tokenized_length
@@ -51,18 +53,11 @@ class ChunkedZeroshotModel(ZeroshotModel):
         else:
             text_chunks.append(". ".join(text_buffer))
 
-        self.logger.debug(f"Chuncked data: {text_chunks}")
-
-        labels = kwargs.get("labels", self.labels)
-        self.logger.debug(f"predicting for: {labels}")
+        self.logger.info(f"Chunked data: {text_chunks}")
 
         for sentence in text_chunks:
 
-            # if len(sentence) < 5:
-            #     # skipping sentences that are extremely short
-            #     continue
-
-            self.logger.debug(f"predciting for sentence: {sentence}")
+            self.logger.debug(f"predicting for sentence: '{sentence}'")
 
             result = self.pipe(sentence, labels, multi_label=multi_label)
             zeroshot_scores.append(result.get("scores"))
