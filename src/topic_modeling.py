@@ -45,7 +45,8 @@ def main(
             logger=logger,
             request_handler=request_handler,
             query_type=DecisionQuery.ALL,
-            do_train_test_split=False
+            do_train_test_split=False,
+            taxonomy_uri="http://stad.gent/id/concepts/gent_words"
         )
         dataset_builder.create_checkpoint("/tmp/data")
 
