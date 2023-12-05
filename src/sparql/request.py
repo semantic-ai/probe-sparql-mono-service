@@ -53,7 +53,7 @@ class RequestHandler:
                     password=self.config.request.password,
                 )
 
-        self.logger.info(f"auth type: {self.config.request.auth_type}")
+        self.logger.debug(f"auth type: {self.config.request.auth_type}")
 
         retries = 1
         succes = False
