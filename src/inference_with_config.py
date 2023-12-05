@@ -47,7 +47,7 @@ def main(
         logger=logger,
         name="config_based_inference_model",
         category="tree_config",
-        mlflow_reference=str(model_config)
+        mlflow_reference=model_config
     )
     query = model.write_to_sparql(request_handler)
 
@@ -74,8 +74,7 @@ def main(
     logger.info(f"Successfully created dataset")
 
     logger.info(f"Loading model config: {str(model_config)}")
-    model_config = ast.literal_eval(str(model_config))
-
+    # model_config = ast.literal_eval(str(model_config))
 
     model_tree = InferenceModelTree.from_model_config(
         config=config,

@@ -25,7 +25,7 @@ class ModelConfig(Settings):
     {{uri}} {date_relation} {{date}} .
     {{uri}} {name_relation} "{{name}}".
     {{uri}} {category_relation} "{{category}}" .
-    {{uri}} {mlflow_url_relation} '{{mlflow_reference}}' .
+    {{uri}} {mlflow_url_relation} \"\"\"{{mlflow_reference}}\"\"\" .
     {{uri}} {mlflow_registered_model_relation} "{{registered_model}}" .
     """
 
