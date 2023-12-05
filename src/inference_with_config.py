@@ -60,8 +60,7 @@ def main(
             request_handler=request_handler,
             taxonomy_uri=taxonomy_uri,
             query_type=DecisionQuery.ALL,
-            do_train_test_split=False,
-            limit=10
+            do_train_test_split=False
         )
         dataset_builder.create_checkpoint("/tmp/data")
 
