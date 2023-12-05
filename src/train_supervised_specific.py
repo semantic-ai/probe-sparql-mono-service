@@ -91,7 +91,7 @@ def main(
             query_type=DecisionQuery.ANNOTATED,
             do_train_test_split=train_test_split,
         )
-        dataset_builder.create_checkpoint("data")
+        dataset_builder.create_checkpoint("/tmp/data")
 
     else:
 

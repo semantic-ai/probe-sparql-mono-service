@@ -143,7 +143,7 @@ def main(
         )
 
         # creating checkpoint from pulled dataset
-        checkpoint_location = dataset_builder.create_checkpoint("data_checkpoint")
+        checkpoint_location = dataset_builder.create_checkpoint("/tmp/data_checkpoint")
 
     with mlflow.start_run(run_name=f"benchmarking_{uuid4().hex}"):
         # creating all permutations

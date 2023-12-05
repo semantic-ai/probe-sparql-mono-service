@@ -47,7 +47,7 @@ def main(
             query_type=DecisionQuery.ALL,
             do_train_test_split=False
         )
-        dataset_builder.create_checkpoint("data")
+        dataset_builder.create_checkpoint("/tmp/data")
 
     else:
 

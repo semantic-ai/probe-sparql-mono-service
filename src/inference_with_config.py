@@ -61,7 +61,7 @@ def main(
             query_type=DecisionQuery.ALL,
             do_train_test_split=False,
         )
-        dataset_builder.create_checkpoint("data")
+        dataset_builder.create_checkpoint("/tmp/data")
 
     else:
 
@@ -70,7 +70,7 @@ def main(
             logger=logger,
             checkpoint_folder=checkpoint_folder
         )
-    logger.info(f"Succesfully created dataset")
+    logger.info(f"Successfully created dataset")
 
     model_tree = InferenceModelTree.from_model_config(
         config=config,
