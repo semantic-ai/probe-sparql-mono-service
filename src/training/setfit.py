@@ -18,6 +18,8 @@ from .trainers import CustomSetFitTrainer
 from .base import Training
 # from ..models import SetfitSupervisedModel
 
+from ..enums import TrainerTypes
+
 
 import torch
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support, jaccard_score, hamming_loss, \
@@ -41,7 +43,8 @@ class SetfitTraining(Training, ABC):
             dataset_builder: DatasetBuilder,
             setfit_head: SetfitClassifierHeads,
             sub_node: str = None,
-            nested_mlflow_run: bool = False
+            nested_mlflow_run: bool = False,
+            trainer_flavour: TrainerTypes = TrainerTypes.SETFIT
     ) -> None:
         super().__init__(
             config=config,
@@ -54,7 +57,6 @@ class SetfitTraining(Training, ABC):
 
         self.setfit_head = setfit_head or SetfitClassifierHeads.SKLEARN_MULTI_OUTPUT
 
-        mlflow.set_experiment("Setfit training")
         mlflow.autolog()
 
         self.train_folder = f"/tmp/training_{uuid4().hex}"
@@ -64,6 +66,8 @@ class SetfitTraining(Training, ABC):
 
         self._create_dataset()
         self._create_model()
+
+        self.trainer_flavour = trainer_flavour
 
     def compute_metrics(self, pred, labels):
         self.count_flag += 1
@@ -80,11 +84,11 @@ class SetfitTraining(Training, ABC):
         hamming = hamming_loss(labels, preds)
 
         clsf_report = classification_report(
-            preds,
             labels,
+            preds,
             target_names=self.target_names
         )
-        multilabel_conf_matrix = multilabel_confusion_matrix(preds, labels)
+        multilabel_conf_matrix = multilabel_confusion_matrix(labels, preds)
 
         classification_report_file = 'Classification_report.txt'
         with open(os.path.join(self.train_folder, classification_report_file), 'w+') as f:

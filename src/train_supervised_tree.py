@@ -11,7 +11,7 @@ from .config import Config
 from .sparql import RequestHandler
 from .utils import LoggingBase
 from .training import get_training_module
-from .enums import DecisionQuery, DatasetType, TrainingFlavours
+from .enums import DecisionQuery, DatasetType, TrainingFlavours, TrainerTypes
 
 import mlflow
 import fire
@@ -25,7 +25,8 @@ def main(
         train_test_split: bool = True,
         checkpoint_folder: str = None,
         max_depth: int = 2,
-        taxonomy_url: str = "http://stad.gent/id/concepts/gent_words"
+        taxonomy_url: str = "http://stad.gent/id/concepts/gent_words",
+        trainer_type: TrainerTypes = TrainerTypes.CUSTOM
 ):
     """
     This script provides the functionality to train all supervised models up to a predefined depth.
@@ -122,7 +123,8 @@ def main(
                 base_model_id=model_id,
                 dataset_builder=copy.deepcopy(dataset_builder),
                 sub_node=None if depth == 1 else taxonomy_node.uri,
-                nested_mlflow_run=True
+                nested_mlflow_run=True,
+                trainer_type=trainer_type
             )
             training_module.train()
 

@@ -5,7 +5,7 @@ from .config import Config
 from .sparql import RequestHandler
 from .utils import LoggingBase
 from .training import get_training_module
-from .enums import DecisionQuery, DatasetType, TrainingFlavours
+from .enums import DecisionQuery, DatasetType, TrainingFlavours, TrainerTypes
 
 import mlflow
 
@@ -18,6 +18,7 @@ def main(
         checkpoint_folder: str = None,
         taxonomy_url: str = "http://stad.gent/id/concepts/gent_words",
         taxonomy_sub_node: str = None,
+        trainer_type: TrainerTypes = TrainerTypes.CUSTOM
 ):
     """
     This script provides the functionality to train the supervised models, the training can be configured in multiple
@@ -109,7 +110,8 @@ def main(
             base_model_id=model_id,
             dataset_builder=dataset_builder,
             sub_node=taxonomy_sub_node,
-            nested_mlflow_run=True
+            nested_mlflow_run=True,
+            trainer_type=trainer_type
         )
         training_module.train()
 

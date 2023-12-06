@@ -21,6 +21,7 @@ from sklearn.metrics import accuracy_score, precision_recall_fscore_support, jac
     classification_report, multilabel_confusion_matrix
 
 from .trainers import MultilabelTrainer
+from ..enums import TrainerTypes
 
 import mlflow
 from mlflow.models import infer_signature
@@ -41,7 +42,8 @@ class DistilBertTraining(Training, ABC):
             base_model_id: str,
             dataset_builder: DatasetBuilder,
             sub_node: str = None,
-            nested_mlflow_run: bool = False
+            nested_mlflow_run: bool = False,
+            trainer_flavour: TrainerTypes = TrainerTypes.CUSTOM
     ):
         super().__init__(
             config=config,
@@ -63,6 +65,8 @@ class DistilBertTraining(Training, ABC):
         self._create_dataset()
         self._create_model()
 
+        self.trainer_flavour = trainer_flavour
+
         self.count_flag = 0
 
     def compute_metrics(self, pred):
@@ -76,11 +80,11 @@ class DistilBertTraining(Training, ABC):
         hamming = hamming_loss(labels, preds)
 
         clsf_report = classification_report(
-            preds,
             labels,
+            preds,
             target_names=self.target_names
         )
-        multilabel_conf_matrix = multilabel_confusion_matrix(preds, labels)
+        multilabel_conf_matrix = multilabel_confusion_matrix(labels, preds)
 
         classification_report_file = 'Classification_report.txt'
         with open(os.path.join(self.train_folder, classification_report_file), 'w+') as f:
@@ -162,7 +166,7 @@ class DistilBertTraining(Training, ABC):
             dataloader_pin_memory=self.config.run.training.arguments.dataloader_pin_memory,
         )
 
-        trainer = MultilabelTrainer(
+        trainer = get_trainer(trainer_flavour=self.trainer_flavour)(
             model=self.model,
             args=training_args,
             train_dataset=self.train_ds,

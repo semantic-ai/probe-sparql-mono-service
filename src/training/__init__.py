@@ -13,17 +13,20 @@ from .distilbert import DistilBertTraining
 from .setfit import SetfitTraining
 from .bert_multilabel import BertTraining
 
-from ..enums import TrainingFlavours
+from ..enums import TrainingFlavours, TrainerTypes
 
 
 def get_training_module(
         config: Config,
         logger: Logger,
         base_model_id: str,
+
         dataset_builder: DatasetBuilder,
         setfit_head=None,
         sub_node=None,
-        nested_mlflow_run: bool = False
+        nested_mlflow_run: bool = False,
+        trainer_type: TrainerTypes = "custom"
+
 ) -> Training:
     """
     This function returns the model that is selected using the config file.
@@ -48,7 +51,8 @@ def get_training_module(
                 dataset_builder=dataset_builder,
                 setfit_head=setfit_head,
                 sub_node=sub_node,
-                nested_mlflow_run=nested_mlflow_run
+                nested_mlflow_run=nested_mlflow_run,
+                trainer_flavour=trainer_type
             )
 
         case TrainingFlavours.DISTIL_BERT | TrainingFlavours.DISTIL_BERT.value:
@@ -59,7 +63,8 @@ def get_training_module(
                 base_model_id=base_model_id,
                 dataset_builder=dataset_builder,
                 sub_node=sub_node,
-                nested_mlflow_run=nested_mlflow_run
+                nested_mlflow_run=nested_mlflow_run,
+                trainer_flavour=trainer_type
             )
 
         case TrainingFlavours.BERT | TrainingFlavours.BERT.value:
@@ -70,7 +75,8 @@ def get_training_module(
                 base_model_id=base_model_id,
                 dataset_builder=dataset_builder,
                 sub_node=sub_node,
-                nested_mlflow_run=nested_mlflow_run
+                nested_mlflow_run=nested_mlflow_run,
+                trainer_flavour=trainer_type
             )
 
         case _:

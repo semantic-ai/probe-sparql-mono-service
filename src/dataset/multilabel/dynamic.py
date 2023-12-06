@@ -206,9 +206,20 @@ class DynamicMultilabelTrainingDataset(TrainDataset):
         :return: a list of integer values where the labels should be predicted
         """
         data_record = self.dataset[idx]
-        motivation = data_record.get("motivation", "")
 
-        return motivation
+        short_title = data_record.get("short_title", "")
+        motivation = data_record.get("motivation", "")
+        description = data_record.get("motivation", "")
+
+        if isinstance(articles := data_record.get("articles", []), list):
+            articles = "\n\n".join(articles)
+
+        return f"""\
+                Een besluit over: 
+                {short_title}: {motivation} 
+                Artikels: {articles}
+                Description: {description}
+                """
 
     def __getitem__(self, idx) -> dict[str, str]:
         """

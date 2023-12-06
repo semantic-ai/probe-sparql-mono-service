@@ -6,3 +6,4 @@ from .request import EndpointType, AuthType
 from .setfit import SetfitClassifierHeads
 from .supervised_flavours import TrainingFlavours
 from .taxonomy import TaxonomyFindTypes
+from .trainer import TrainerTypes

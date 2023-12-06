@@ -20,6 +20,9 @@ from transformers import TrainingArguments, AutoTokenizer, AutoModelForSequenceC
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support, jaccard_score, hamming_loss, \
     classification_report, multilabel_confusion_matrix, roc_auc_score
 
+from .trainers import get_trainer
+from ..enums import TrainerTypes
+
 import mlflow
 import os
 import torch
@@ -39,7 +42,8 @@ class BertTraining(Training, ABC):
             base_model_id: str,
             dataset_builder: DatasetBuilder,
             sub_node: str = None,
-            nested_mlflow_run:bool = False
+            nested_mlflow_run: bool = False,
+            trainer_flavour: TrainerTypes = TrainerTypes.CUSTOM
     ):
         super().__init__(
             config=config,
@@ -60,6 +64,8 @@ class BertTraining(Training, ABC):
         self.tokenizer = AutoTokenizer.from_pretrained(self.base_model_id, do_lower_case=True)
         self._create_dataset()
         self._create_model()
+
+        self.trainer_flavour = trainer_flavour
 
         self.count_flag = 0
 
@@ -84,11 +90,11 @@ class BertTraining(Training, ABC):
         roc_auc = roc_auc_score(labels, preds, average='micro')
 
         clsf_report = classification_report(
-            preds,
             labels,
+            preds,
             target_names=self.target_names
         )
-        multilabel_conf_matrix = multilabel_confusion_matrix(preds, labels)
+        multilabel_conf_matrix = multilabel_confusion_matrix(labels, preds)
 
         classification_report_file = 'Classification_report.txt'
         with open(os.path.join(self.train_folder, classification_report_file), 'w+') as f:
@@ -143,8 +149,9 @@ class BertTraining(Training, ABC):
             self.train_dataset
         )
 
-        mlflow.log_dict(self.train_dataset.label_distribution, "train_distribution.json")
-        self.logger.info(f"label distribution train: {self.train_dataset.label_distribution}")
+        self.train_dist = self.train_dataset.label_distribution
+        mlflow.log_dict(self.train_dist, "train_distribution.json")
+        self.logger.info(f"label distribution train: {self.train_dist}")
 
         eval_dataset = create_dataset(
             config=self.config,
@@ -162,7 +169,7 @@ class BertTraining(Training, ABC):
 
         if len(eval_dataset) > 0:
             self.logger.debug(f"Example dataset record: {eval_dataset[0]}")
-            self.logger.debug("infomratoin")
+            self.logger.debug("information")
             self.logger.debug(np.asarray(self.eval_ds[0:80]['labels']).shape)
             self.logger.debug(np.sum(np.array(self.eval_ds[0:80]['labels']), axis=0))
 
@@ -184,12 +191,14 @@ class BertTraining(Training, ABC):
             dataloader_pin_memory=self.config.run.training.arguments.dataloader_pin_memory,
         )
 
-        trainer = MultilabelTrainer(
+        trainer = get_trainer(
+            trainer_flavour=self.trainer_flavour,
             model=self.model,
             args=training_args,
             train_dataset=self.train_ds,
             eval_dataset=self.eval_ds,
             compute_metrics=self.compute_metrics,
+            label_dist=self.train_dist
         )
 
         trainer.train()

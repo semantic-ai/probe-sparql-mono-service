@@ -84,10 +84,12 @@ class InferenceModel:
         # when label is not found raise
         logger.debug(f"label: {label}")
 
-        _class.label = "main" if "parent_node" in model_config.get("model_id", "") else label
+        # _class.label = "main" if taxonomy.uri.split("/")[-1] in model_config.get("model_id", "").split("__")[-1] else label
         _class.uri = uri_value
 
-        if "parent_node" in model_config.get("model_id", ""):
+        logger.info(f"Taxonomy level {taxonomy.level}")
+
+        if taxonomy.level == 0:
             _class.label = "main"
             _class.labels = [c.label for c in taxonomy.children]
         else:
@@ -136,7 +138,7 @@ class InferenceModel:
 
     @label.setter
     def label(self, value) -> None:
-        self._label = value.lower()
+        self._label = value.lower() if value is not None else value
 
     @property
     def uri(self) -> str:
@@ -548,6 +550,11 @@ class Inference:
             self.logger.info(f"Current text: {text}")
             predictions = self._single_prediction(text=text)
             labels = self._prediction_to_labels(predictions=predictions)
+
+            if len(labels) == 0:
+                self.logger.info("Skipper, no labels predicted")
+                continue
+
             query = self._single_query_generation(
                 uri=decision_uri,
                 labels=labels
