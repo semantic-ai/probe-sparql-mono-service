@@ -8,6 +8,7 @@ import mlflow, os
 from sentence_transformers import SentenceTransformer
 from umap import UMAP
 
+
 class HierarchicTopicModel(RegularTopicModel):
     """
     Regular topic modeling implementation.
@@ -30,6 +31,15 @@ class HierarchicTopicModel(RegularTopicModel):
                 embeddings=embeddings
             )
 
+            topic_model.get_topic_info().to_csv(
+                open(
+                    os.path.join(
+                        self.base_path,
+                        "visualized_topics.csv"
+                    ),
+                    "w"
+                )
+            )
 
             linkage_function = lambda x: sch.linkage(x, 'single', optimal_ordering=True)
             hierarchical_topics = topic_model.hierarchical_topics(

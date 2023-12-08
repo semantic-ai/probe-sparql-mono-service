@@ -41,6 +41,16 @@ class DynamicTopicModel(RegularTopicModel):
                 )
             )
 
+            topic_model.get_topic_info().to_csv(
+                open(
+                    os.path.join(
+                        self.base_path,
+                        "visualized_topics.csv"
+                    ),
+                    "w"
+                )
+            )
+
             topics_over_time = topic_model.topics_over_time(self.docs, self.timestamps)
             topic_model.visualize_topics_over_time(
                 topics_over_time
@@ -52,4 +62,9 @@ class DynamicTopicModel(RegularTopicModel):
                     ),
                     "w"
                 )
+            )
+
+            mlflow.log_artifacts(
+                local_dir=self.base_path,
+                artifact_path="artifacts"
             )

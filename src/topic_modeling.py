@@ -14,6 +14,7 @@ from .enums import DecisionQuery, DatasetType, ModelType
 from .models import get_topic_model
 
 import fire
+import copy
 
 
 def main(
