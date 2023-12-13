@@ -1,8 +1,6 @@
 Codebase overview
 =================
 
-test 123
-
 Modules
 *******
 
@@ -24,6 +22,7 @@ Modules
 
 Entrypoints
 ***********
+
 In this section you can find all entrypoints scripts with their technical documentation.
 These entrypoints are directly called from the airflow DAGs
 
@@ -78,10 +77,11 @@ Train supervised model for entire taxonomy tree
    :undoc-members:
    :show-inheritance:
 
+
 Execute inference based on a provided model tree configuration
 --------------------------------------------------------------
 
-.. automodule:: src.train_supervised
+.. automodule:: src.topic_modeling
    :members:
    :undoc-members:
    :show-inheritance:
