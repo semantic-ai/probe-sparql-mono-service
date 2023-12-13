@@ -82,14 +82,14 @@ class InferenceModel:
                 label = v.get("label")
 
         # when label is not found raise
-        logger.debug(f"label: {label}")
+        logger.info(f"label: {label}")
 
         # _class.label = "main" if taxonomy.uri.split("/")[-1] in model_config.get("model_id", "").split("__")[-1] else label
         _class.uri = uri_value
 
-        logger.info(f"Taxonomy level {taxonomy.level}")
+        logger.info(f"Taxonomy level {taxonomy.level} {taxonomy.label}---------")
 
-        if taxonomy.level == 0:
+        if label is None:
             _class.label = "main"
             _class.labels = [c.label for c in taxonomy.children]
         else:
@@ -100,7 +100,7 @@ class InferenceModel:
                 search_kind=TaxonomyFindTypes.URI
             )
             _class.labels = child_labels
-
+            logger.info(_class.labels)
         return _class
 
     @property
