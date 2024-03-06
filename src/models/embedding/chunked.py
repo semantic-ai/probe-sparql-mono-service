@@ -49,7 +49,7 @@ class ChunkedEmbeddingModel(EmbeddingModel):
 
         self.logger.debug(f"Chuncked data: {text_chunks}")
 
-        for sentence in text_chunks:
+        for sentence in [c for c in text_chunks if len(c.replace(" ", "")) >= 2]:
 
             # if len(sentence) < 5:
             #     # skipping sentences that are extremely short

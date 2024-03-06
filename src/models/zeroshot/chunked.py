@@ -55,7 +55,7 @@ class ChunkedZeroshotModel(ZeroshotModel):
 
         self.logger.info(f"Chunked data: {text_chunks}")
 
-        for sentence in text_chunks:
+        for sentence in [c for c in text_chunks if len(c.replace(" ", "")) >= 2]:
 
             self.logger.debug(f"predicting for sentence: '{sentence}'")
 
