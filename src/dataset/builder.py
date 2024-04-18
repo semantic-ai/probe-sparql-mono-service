@@ -193,7 +193,12 @@ class DatasetBuilder:
                 annotation_uri=response.get("annotation", None)
             )
 
-            dataset.append(decision.train_record)
+            try:
+                dataset.append(decision.train_record)
+            except AttributeError:
+                pass  # because faulty database records suddenly exist
+            except Exception:
+                raise Exception
 
         taxonomy = TaxonomyTypes.from_sparql(
             config=config.data_models,
