@@ -162,9 +162,6 @@ class DatasetBuilder:
 
         decision_response = request_handler.post2json(decision_query)
 
-        if limit := kwargs.get("limit", False):
-            decision_response = decision_response[:limit]
-
         for response in decision_response:
             decision_uri = response.get("_besluit")
 
@@ -173,6 +170,11 @@ class DatasetBuilder:
             value = int(response.get("date", 0))
             if _memory.get(decision_uri, [0])[0] <= value:
                 _memory[decision_uri] = [value, response.get("anno", None)]
+
+        # Limit the amount of information to process
+        if limit := os.getenv("DATA_MAX_LIMIT", False):
+            print(f"Limiting {len(_memory)} to {limit}")
+            _memory = dict(list(_memory.items())[:int(limit)])
 
         # create cleaned list of decisions and pull all relevant information
         annotated_decisions = [
