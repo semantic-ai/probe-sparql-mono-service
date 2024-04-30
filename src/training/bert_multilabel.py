@@ -178,7 +178,7 @@ class BertTraining(Training, ABC):
 
     def train(self):
         training_args = TrainingArguments(
-            output_dir='./results',
+            output_dir='/tmp/results',
             num_train_epochs=self.config.run.training.arguments.num_train_epochs,
             per_device_train_batch_size=self.config.run.training.arguments.per_device_train_batch_size,
             per_device_eval_batch_size=self.config.run.training.arguments.per_device_eval_batch_size,
