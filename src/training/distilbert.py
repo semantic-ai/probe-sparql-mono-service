@@ -28,6 +28,7 @@ from mlflow.models import infer_signature
 import os
 import torch
 from uuid import uuid4
+from shutil import rmtree
 
 
 class DistilBertTraining(Training, ABC):
@@ -151,9 +152,8 @@ class DistilBertTraining(Training, ABC):
         )
 
     def train(self):
-
         training_args = TrainingArguments(
-            output_dir='/tmp/results',
+            output_dir=os.path.join(self.train_folder, 'results'),
             num_train_epochs=self.config.run.training.arguments.num_train_epochs,
             per_device_train_batch_size=self.config.run.training.arguments.per_device_train_batch_size,
             per_device_eval_batch_size=self.config.run.training.arguments.per_device_eval_batch_size,
@@ -199,6 +199,10 @@ class DistilBertTraining(Training, ABC):
             registered_model_name=model_name,
             artifact_path="model"
         )
+
+
+        # cleanup
+        rmtree(self.train_folder)
 
     def __call__(self):
         self.train()

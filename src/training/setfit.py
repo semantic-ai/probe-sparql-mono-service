@@ -26,6 +26,7 @@ from sklearn.metrics import accuracy_score, precision_recall_fscore_support, jac
     classification_report, multilabel_confusion_matrix
 
 import mlflow, os
+from shutil import rmtree
 
 
 class SetfitTraining(Training, ABC):
@@ -169,6 +170,8 @@ class SetfitTraining(Training, ABC):
 
             metrics = trainer.evaluate()
             mlflow.log_metrics(metrics)
+
+            rmtree(self.train_folder)
 
     def __call__(self):
         self.train()
