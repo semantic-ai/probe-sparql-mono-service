@@ -189,6 +189,7 @@ class BertTraining(Training, ABC):
             load_best_model_at_end=self.config.run.training.arguments.load_best_model_at_end,
             evaluation_strategy=self.config.run.training.arguments.evaluation_strategy,
             save_strategy=self.config.run.training.arguments.save_strategy,
+            save_total_limit=1,
             dataloader_pin_memory=self.config.run.training.arguments.dataloader_pin_memory,
         )
 
@@ -206,6 +207,10 @@ class BertTraining(Training, ABC):
         best_model_results = trainer.evaluate()
 
         mlflow.log_metrics(best_model_results, step=self.count_flag)
+
+        # cleanup of result dir
+        rmtree(os.path.join(self.train_folder, "results"))
+
         mlflow.log_artifacts(self.train_folder)
 
         components = dict(
