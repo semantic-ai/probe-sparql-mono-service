@@ -11,7 +11,7 @@ class TrainingConfig(Settings):
     weight_decay: float = 0.01
     load_best_model_at_end: bool = True
     evaluation_strategy: str = "epoch"
-    save_strategy: str = "epoch"
+    save_strategy: str = "no"
     dataloader_pin_memory: bool = True
 
     class Config():
