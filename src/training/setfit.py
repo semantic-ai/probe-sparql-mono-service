@@ -149,7 +149,7 @@ class SetfitTraining(Training, ABC):
         )
 
     def train(self):
-        with mlflow.start_run(nested=self.nested_mlflow_run):
+        try:
             trainer = CustomSetFitTrainer(
                 model=self.model,
                 train_dataset=self.train_ds,
@@ -170,7 +170,10 @@ class SetfitTraining(Training, ABC):
 
             metrics = trainer.evaluate()
             mlflow.log_metrics(metrics)
+        except Exception as ex:
+            self.logger.error(f"The following error occurred during training: {ex}")
 
+        finally:
             rmtree(self.train_folder)
 
     def __call__(self):

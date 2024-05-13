@@ -178,60 +178,66 @@ class BertTraining(Training, ABC):
         self.logger.info(f"label distribution test: {eval_dataset.label_distribution}")
 
     def train(self):
-        training_args = TrainingArguments(
-            output_dir=os.path.join(self.train_folder, 'results'),
-            num_train_epochs=self.config.run.training.arguments.num_train_epochs,
-            per_device_train_batch_size=self.config.run.training.arguments.per_device_train_batch_size,
-            per_device_eval_batch_size=self.config.run.training.arguments.per_device_eval_batch_size,
-            warmup_steps=self.config.run.training.arguments.warmup_steps,
-            weight_decay=self.config.run.training.arguments.weight_decay,
-            logging_dir=os.path.join(self.train_folder, "logs"),
-            load_best_model_at_end=self.config.run.training.arguments.load_best_model_at_end,
-            evaluation_strategy=self.config.run.training.arguments.evaluation_strategy,
-            save_strategy=self.config.run.training.arguments.save_strategy,
-            save_total_limit=1,
-            dataloader_pin_memory=self.config.run.training.arguments.dataloader_pin_memory,
-        )
+        try:
+            training_args = TrainingArguments(
+                output_dir=os.path.join(self.train_folder, 'results'),
+                num_train_epochs=self.config.run.training.arguments.num_train_epochs,
+                per_device_train_batch_size=self.config.run.training.arguments.per_device_train_batch_size,
+                per_device_eval_batch_size=self.config.run.training.arguments.per_device_eval_batch_size,
+                warmup_steps=self.config.run.training.arguments.warmup_steps,
+                weight_decay=self.config.run.training.arguments.weight_decay,
+                logging_dir=os.path.join(self.train_folder, "logs"),
+                load_best_model_at_end=self.config.run.training.arguments.load_best_model_at_end,
+                evaluation_strategy=self.config.run.training.arguments.evaluation_strategy,
+                save_strategy=self.config.run.training.arguments.save_strategy,
+                save_total_limit=1,
+                dataloader_pin_memory=self.config.run.training.arguments.dataloader_pin_memory,
+            )
 
-        trainer = get_trainer(
-            trainer_flavour=self.trainer_flavour,
-            model=self.model,
-            args=training_args,
-            train_dataset=self.train_ds,
-            eval_dataset=self.eval_ds,
-            compute_metrics=self.compute_metrics,
-            label_dist=self.train_dist
-        )
+            trainer = get_trainer(
+                trainer_flavour=self.trainer_flavour,
+                model=self.model,
+                args=training_args,
+                train_dataset=self.train_ds,
+                eval_dataset=self.eval_ds,
+                compute_metrics=self.compute_metrics,
+                label_dist=self.train_dist
+            )
 
-        trainer.train()
-        best_model_results = trainer.evaluate()
+            trainer.train()
+            best_model_results = trainer.evaluate()
 
-        mlflow.log_metrics(best_model_results, step=self.count_flag)
+            mlflow.log_metrics(best_model_results, step=self.count_flag)
 
-        # cleanup of result dir
-        rmtree(os.path.join(self.train_folder, "results"))
+            # cleanup of result dir
+            rmtree(os.path.join(self.train_folder, "results"))
 
-        mlflow.log_artifacts(self.train_folder)
+            mlflow.log_artifacts(self.train_folder)
 
-        components = dict(
-            model=trainer.model,
-            tokenizer=self.tokenizer
-        )
+            components = dict(
+                model=trainer.model,
+                tokenizer=self.tokenizer
+            )
 
-        model_flavour = "bert"
-        taxonomy_name = self.dataset_builder.taxonomy.uri.split('/')[-1]
+            model_flavour = "bert"
+            taxonomy_name = self.dataset_builder.taxonomy.uri.split('/')[-1]
 
-        if hasattr(self.train_dataset, "sub_node_taxo"):
-            sub_taxonomy_name = "_".join(self.train_dataset.sub_node_taxo.label.split())
-        else:
-            sub_taxonomy_name = "parent_node"
+            if hasattr(self.train_dataset, "sub_node_taxo"):
+                sub_taxonomy_name = "_".join(self.train_dataset.sub_node_taxo.label.split())
+            else:
+                sub_taxonomy_name = "parent_node"
 
-        model_name = "__".join([model_flavour, taxonomy_name, sub_taxonomy_name]).lower()
-        mlflow.transformers.log_model(
-            transformers_model=components,
-            registered_model_name=model_name,
-            artifact_path="model"
-        )
+            model_name = "__".join([model_flavour, taxonomy_name, sub_taxonomy_name]).lower()
+            mlflow.transformers.log_model(
+                transformers_model=components,
+                registered_model_name=model_name,
+                artifact_path="model"
+            )
 
-        # cleanup
-        rmtree(self.train_folder)
+            # cleanup
+            rmtree(self.train_folder)
+        except Exception as ex:
+            self.logger.error(f"The following error occurred during training: {ex}")
+            # cleanup
+        finally:
+            rmtree(self.train_folder)
