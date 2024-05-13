@@ -172,7 +172,7 @@ class SetfitTraining(Training, ABC):
             mlflow.log_metrics(metrics)
         except Exception as ex:
             self.logger.error(f"The following error occurred during training: {ex}")
-
+            mlflow.set_tag("LOG_STATUS", "FAILED")
         finally:
             rmtree(self.train_folder)
 

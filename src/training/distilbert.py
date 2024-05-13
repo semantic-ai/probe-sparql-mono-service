@@ -24,7 +24,6 @@ from .trainers import MultilabelTrainer
 from ..enums import TrainerTypes
 
 import mlflow
-from mlflow.models import infer_signature
 import os
 import torch
 from uuid import uuid4
@@ -208,7 +207,7 @@ class DistilBertTraining(Training, ABC):
 
         except Exception as ex:
             self.logger.error(f"The following error occurred during training: {ex}")
-            # cleanup
+            mlflow.set_tag("LOG_STATUS", "FAILED")
         finally:
             rmtree(self.train_folder)
 

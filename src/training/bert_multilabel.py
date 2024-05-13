@@ -234,10 +234,8 @@ class BertTraining(Training, ABC):
                 artifact_path="model"
             )
 
-            # cleanup
-            rmtree(self.train_folder)
         except Exception as ex:
             self.logger.error(f"The following error occurred during training: {ex}")
-            # cleanup
+            mlflow.set_tag("LOG_STATUS", "FAILED")
         finally:
             rmtree(self.train_folder)
