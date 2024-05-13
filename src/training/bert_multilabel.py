@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC
+import traceback
 # typing imports
 from typing import TYPE_CHECKING
 
@@ -235,6 +236,7 @@ class BertTraining(Training, ABC):
             )
 
         except Exception as ex:
+            traceback.print_exception(ex)
             self.logger.error(f"The following error occurred during training: {ex}")
             mlflow.set_tag("LOG_STATUS", "FAILED")
         finally:

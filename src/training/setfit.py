@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+import traceback
 from abc import ABC
-# typing imports
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -16,7 +16,6 @@ from setfit import SetFitModel
 from uuid import uuid4
 from .trainers import CustomSetFitTrainer
 from .base import Training
-# from ..models import SetfitSupervisedModel
 
 from ..enums import TrainerTypes
 
@@ -25,7 +24,8 @@ import torch
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support, jaccard_score, hamming_loss, \
     classification_report, multilabel_confusion_matrix
 
-import mlflow, os
+import mlflow
+import os
 from shutil import rmtree
 
 
@@ -171,6 +171,7 @@ class SetfitTraining(Training, ABC):
             metrics = trainer.evaluate()
             mlflow.log_metrics(metrics)
         except Exception as ex:
+            traceback.print_exception(ex)
             self.logger.error(f"The following error occurred during training: {ex}")
             mlflow.set_tag("LOG_STATUS", "FAILED")
         finally:

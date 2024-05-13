@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import traceback
-# typing imports
 from typing import TYPE_CHECKING
 
 import mlflow
@@ -163,6 +162,7 @@ class BenchmarkWrapper(BenchmarkBase):
                     try:
                         _model = self._create_model(model_id=model_id)
                     except Exception as ex:
+                        traceback.print_exception(ex)
                         self.logger.error(f"The following error occured during initalization of the model {ex}")
 
 

@@ -5,6 +5,7 @@ from .sparql import RequestHandler
 from .utils import LoggingBase
 from .enums import ModelType, DatasetType, DecisionQuery
 
+import traceback
 from fire import Fire
 from uuid import uuid4
 import mlflow
@@ -206,6 +207,7 @@ def main(
                     benchmark()
 
                 except Exception as ex:
+                    traceback.print_exception(ex)
                     logger.error(
                         f"Benchmarking failed with current configuration model_type:{model_type}, dataset_type: {dataset_type}")
                     logger.error(f"Exception that was caught: {ex}")
