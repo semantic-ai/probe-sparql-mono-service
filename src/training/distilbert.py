@@ -20,8 +20,9 @@ from transformers import TrainingArguments, DistilBertTokenizerFast, \
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support, jaccard_score, hamming_loss, \
     classification_report, multilabel_confusion_matrix
 
-from .trainers import MultilabelTrainer
+from .trainers import get_trainer
 from ..enums import TrainerTypes
+import traceback
 
 import mlflow
 import os
@@ -136,6 +137,7 @@ class DistilBertTraining(Training, ABC):
         self.train_ds = Dataset.from_list(
             self.train_dataset
         )
+        self.train_dist = self.train_dataset.label_distribution
 
         eval_dataset = create_dataset(
             config=self.config,
@@ -167,12 +169,14 @@ class DistilBertTraining(Training, ABC):
                 dataloader_pin_memory=self.config.run.training.arguments.dataloader_pin_memory,
             )
 
-            trainer = get_trainer(trainer_flavour=self.trainer_flavour)(
+            trainer = get_trainer(
+                trainer_flavour=self.trainer_flavour,
                 model=self.model,
                 args=training_args,
                 train_dataset=self.train_ds,
                 eval_dataset=self.eval_ds,
                 compute_metrics=self.compute_metrics,
+                label_dist=self.train_dist
             )
 
             trainer.train()
@@ -206,6 +210,7 @@ class DistilBertTraining(Training, ABC):
             )
 
         except Exception as ex:
+            traceback.print_exception(ex)
             self.logger.error(f"The following error occurred during training: {ex}")
             mlflow.set_tag("LOG_STATUS", "FAILED")
         finally:
